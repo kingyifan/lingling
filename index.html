@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>致玲玲 · 从北京的深夜到赛里木湖的蓝</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Google Fonts: Elegant Chinese Serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-night: #060913;
+            --warm-gold: #f3d5a5;
+            --rose-quartz: #f4b8b4;
+            --ember-orange: #ff9e6d;
+            --sayram-blue: #38bdf8;
+            --sayram-soft: #60a5fa;
+            --rose-white: #f7ebe8;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            background-color: #03050a;
+            color: var(--rose-white);
+            font-family: 'Noto Serif SC', 'Songti SC', 'STSong', -apple-system, BlinkMacSystemFont, serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .font-en {
+            font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        }
+
+        /* Strict Mobile-Only Viewport Shell (Max 480px centered on larger screens) */
+        #mobile-shell {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-night);
+            overflow: hidden;
+            box-shadow: 0 0 90px rgba(0, 0, 0, 0.96);
+        }
+
+        /* 3D WebGL Background Layer inside Mobile Shell */
+        #webgl-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            touch-action: pan-y;
+        }
+
+        /* Soft Mobile Vignette Overlay */
+        .vignette-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: radial-gradient(
+                circle at 50% 34%,
+                rgba(6, 9, 19, 0.10) 0%,
+                rgba(6, 9, 19, 0.72) 76%,
+                rgba(4, 6, 14, 0.95) 100%
+            );
+        }
+
+        /* Vertical Full-Screen Snap Scroll Container */
+        #scroll-stage {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        #scroll-stage::-webkit-scrollbar {
+            display: none;
+        }
+
+        .story-section {
+            height: 100vh;
+            height: 100dvh;
+            width: 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: calc(env(safe-area-inset-top, 12px) + 2.8rem) 1.15rem calc(env(safe-area-inset-bottom, 12px) + 2.6rem);
+            position: relative;
+        }
+
+        /* Mobile Letter Glass Card */
+        .letter-card {
+            background: linear-gradient(165deg, rgba(14, 20, 38, 0.70) 0%, rgba(8, 11, 23, 0.56) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(243, 213, 165, 0.16);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.68);
+        }
+
+        /* Sayram Lake Special Glass Card */
+        .sayram-card {
+            background: linear-gradient(165deg, rgba(10, 25, 48, 0.72) 0%, rgba(7, 14, 28, 0.58) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 20px 50px rgba(3, 12, 28, 0.75);
+        }
+
+        .minimal-pill {
+            background: rgba(11, 15, 29, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(243, 213, 165, 0.18);
+        }
+
+        /* Staggered Line-by-Line Fade-In on Scroll */
+        .stagger-line {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .story-section.is-visible .stagger-line {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .d-1 { transition-delay: 0.08s; }
+        .d-2 { transition-delay: 0.22s; }
+        .d-3 { transition-delay: 0.36s; }
+        .d-4 { transition-delay: 0.50s; }
+        .d-5 { transition-delay: 0.64s; }
+        .d-6 { transition-delay: 0.78s; }
+
+        /* Typography & Warm Highlights */
+        .text-champagne {
+            background: linear-gradient(135deg, #fff9f0 0%, #f3d5a5 50%, #ff9e6d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-sayram {
+            background: linear-gradient(135deg, #ffffff 0%, #bae6fd 48%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .underline-warm {
+            color: #fae3c6;
+            border-bottom: 1px solid rgba(243, 213, 165, 0.4);
+            padding-bottom: 1px;
+        }
+
+        .underline-sayram {
+            color: #bae6fd;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.45);
+            padding-bottom: 1px;
+        }
+
+        /* Phone Call Soundwave Animation */
+        @keyframes waveBreath {
+            0%, 100% { transform: scaleY(0.26); opacity: 0.45; }
+            50% { transform: scaleY(1); opacity: 0.98; }
+        }
+        .wave-bar {
+            animation: waveBreath 1.35s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        /* Soft Breathing Glow for Primary CTA */
+        @keyframes softGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(243, 213, 165, 0.32), 0 8px 28px rgba(255, 158, 109, 0.22); }
+            50% { box-shadow: 0 0 0 9px rgba(243, 213, 165, 0), 0 8px 34px rgba(56, 189, 248, 0.34); }
+        }
+        .btn-glow {
+            animation: softGlow 2.8s infinite ease-in-out;
+        }
+
+        /* Upward Swipe Breathing Indicator */
+        @keyframes swipeUpHint {
+            0%, 100% { transform: translateY(0); opacity: 0.42; }
+            50% { transform: translateY(-5px); opacity: 0.88; }
+        }
+        .swipe-hint {
+            animation: swipeUpHint 2.2s ease-in-out infinite;
+        }
+
+        /* Slow Rotating Music Note */
+        @keyframes spinNote {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-note {
+            animation: spinNote 10s linear infinite;
+        }
+
+        /* Toast Fade */
+        @keyframes toastPop {
+            0% { opacity: 0; transform: translate(-50%, 10px); }
+            15%, 85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -8px); }
+        }
+        .toast-msg {
+            animation: toastPop 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* Seal Stamp Animation */
+        @keyframes stampBounce {
+            0% { transform: scale(1.7) rotate(-12deg); opacity: 0; }
+            60% { transform: scale(0.92) rotate(-6deg); opacity: 1; }
+            100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+        }
+        .stamp-active {
+            animation: stampBounce 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+    </style>
+</head>
+<body class="select-none">
+
+    <!-- MOBILE-ONLY CONTAINER SHELL -->
+    <div id="mobile-shell">
+
+        <!-- 1. THREE.JS 3D STARLIGHT & MORPHING PARTICLES -->
+        <div id="webgl-container"></div>
+        <div class="vignette-overlay"></div>
+
+        <!-- 2. NON-INTRUSIVE TOP TOAST -->
+        <div id="toast-box" class="absolute top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[88%] flex flex-col items-center gap-1.5"></div>
+
+        <!-- 3. COVER OVERLAY (封面：玲玲，展信佳) -->
+        <div id="cover-gate" class="absolute inset-0 z-40 flex flex-col justify-between px-7 py-10 bg-[#060913]/92 backdrop-blur-xl transition-opacity duration-1000">
+            <!-- Top Subtle Coordinates -->
+            <div class="pt-3 text-center space-y-1">
+                <p class="font-en italic text-[11px] tracking-[0.26em] text-[#f3d5a5]/65 uppercase">
+                    Beijing · Sayram Lake · Forever
+                </p>
+                <p class="text-[10px] tracking-[0.2em] text-slate-500 font-light">
+                    2026.10.30 11:42 — 2026.11.09 03:02
+                </p>
+            </div>
+
+            <!-- Center Letter Seal -->
+            <div class="my-auto text-center space-y-5">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#f3d5a5]/25 bg-[#f3d5a5]/[0.06] text-[11px] text-[#f3d5a5]/90 tracking-[0.18em]">
+                    <span>96年腊月鼠</span>
+                    <span class="opacity-40">×</span>
+                    <span>98年九月虎</span>
+                </div>
+
+                <div class="space-y-2">
+                    <h1 class="text-2xl font-normal tracking-[0.24em] text-champagne">
+                        致 玲 玲
+                    </h1>
+                    <p class="text-xs text-slate-400 tracking-[0.16em] font-light">
+                        从北京的万家灯火，到明年赛里木湖的蓝
+                    </p>
+                </div>
+
+                <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#f3d5a5]/45 to-transparent mx-auto"></div>
+
+                <p class="text-[13px] text-slate-300/90 leading-[2.12] font-light tracking-wider">
+                    没遇见你之前，我只是一个人在北京熬日子；<br>
+                    遇见你之后，晚风有了温度，北漂有了意义。<br>
+                    这是一封写给最让我心疼、也让我最幸福的姑娘的信，<br>
+                    关于我们的过去、深夜的电话，和明年的结婚证。
+                </p>
+
+                <div class="pt-3">
+                    <button id="btn-open-letter" class="btn-glow w-full max-w-[240px] py-3.5 rounded-full bg-gradient-to-r from-[#f3d5a5] via-[#fae5c3] to-[#ff9e6d] text-[#060913] text-[13px] tracking-[0.22em] font-medium active:scale-95 transition-transform">
+                        玲玲，开启我们的故事
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Hint -->
+            <div class="pb-1 text-center">
+                <p class="text-[11px] text-slate-500 tracking-[0.15em] font-light">
+                    建议开启声音 · 在屏幕上轻滑翻阅这 7 页心事
+                </p>
+            </div>
+        </div>
+
+        <!-- 4. MINIMALIST MOBILE TOP HUD -->
+        <header id="mobile-hud" class="absolute top-0 left-0 right-0 z-30 px-4 pt-[calc(env(safe-area-inset-top,8px)+8px)] pb-1.5 flex items-center justify-between opacity-0 pointer-events-none transition-opacity duration-700">
+            <!-- Left Chapter Tag -->
+            <div class="minimal-pill px-3.5 py-1 rounded-full flex items-center gap-2 pointer-events-auto">
+                <span id="hud-dot" class="w-1.5 h-1.5 rounded-full bg-[#f3d5a5] shadow-[0_0_6px_#f3d5a5]"></span>
+                <span id="hud-page-title" class="text-[11px] tracking-[0.14em] text-[#f3d5a5]/90 font-light">01 / 07 · 以相亲之名</span>
+            </div>
+
+            <!-- Right Minimalist Music Note Switch -->
+            <button id="btn-music-toggle" class="minimal-pill w-8 h-8 rounded-full flex items-center justify-center text-[#f3d5a5]/90 active:scale-90 transition-transform pointer-events-auto" aria-label="背景音乐开关">
+                <svg id="icon-music-on" class="w-3.5 h-3.5 spin-note" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+                <svg id="icon-music-off" class="w-3.5 h-3.5 hidden opacity-45" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- 5. VERTICAL SNAP STORY PAGES (7 Full-Screen Mobile Chapters) -->
+        <main id="scroll-stage">
+
+            <!-- =========================================================
+                 CHAPTER 1: 2026.10.30 11:42 · 以相亲之名，赴一场命中注定
+            ========================================================== -->
+            <section class="story-section is-visible" data-chapter="0" data-title="01 / 07 · 11:42 命中注定">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                        <span>以相亲之名，赴一场命中注定</span>
+                        <span class="font-mono">2026.10.30 11:42</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        老天爷怕北京太大、地铁太挤，<br>
+                        才借着“相亲”的名义把你推到我面前。
+                    </h2>
+
+                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/90 leading-[1.92] font-light tracking-wide">
+                        <p>
+                            很多人觉得，相亲是一场仓促的世俗安排。可直到 <span class="underline-warm font-normal">2026年10月30日 11:42</span> 遇见你的那一刻，我才恍然明白——这哪里是寻常的相亲。
+                        </p>
+                        <p>
+                            那是老天爷看我们两个认真生活的人在人海里太孤单，怕我们在北京早晚高峰的地铁里擦肩而过，所以特意借着“相亲”的名义，在十月三十号的中午 <span class="text-[#f3d5a5]">11点42分</span>，把你稳稳地送到了我身边。
+                        </p>
+                    </div>
+
+                    <div class="stagger-line d-4 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>初识至今已走过</span>
+                        <span id="met-timer-text" class="font-mono text-[#f3d5a5] tracking-wider">--天 --小时 --分 --秒</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 2: 孤独的北漂，因你有了生活的意义
+            ========================================================== -->
+            <section class="story-section" data-chapter="1" data-title="02 / 07 · 北漂有了意义">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                        <span>孤独的北漂 · 因你有了光</span>
+                        <span>BEIJING WITH YOU</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        以前一个人的北漂只是活着，<br>
+                        有了你之后，我的生活才有了意义。
+                    </h2>
+
+                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/90 leading-[1.92] font-light tracking-wide">
+                        <p>
+                            没遇到你之前，北京对我来说只有加班后的末班地铁、一个人随便应付的外卖，和推开门后漆黑冷清的房间。那时候的日子，只是日复一日地熬。
+                        </p>
+                        <p>
+                            直到有了你，一切都变得不一样了。路过的晚风有了温度，下班的路有了盼头，连清晨醒来的第一秒都是甜的。<span class="underline-warm font-normal">是你让我在这座偌大的城市里，第一次觉得不再是漂泊，而是真正有了生活的意义。</span>
+                        </p>
+                    </div>
+
+                    <!-- Interactive Touch to Warm Beijing Night -->
+                    <div class="stagger-line d-4 pt-1">
+                        <button id="btn-warm-beijing" class="w-full py-2.5 px-3.5 rounded-2xl bg-[#f3d5a5]/10 border border-[#f3d5a5]/30 flex items-center justify-between text-[12px] text-[#f3d5a5] active:scale-[0.98] transition-all">
+                            <span id="warm-beijing-label">✨ 轻触点亮：属于我们两个人的万家灯火</span>
+                            <span class="text-[11px] opacity-75">点亮暖光 →</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 3: 烤鱼的雾气与烧烤的炭火 · 96年腊月鼠 × 98年九月虎
+            ========================================================== -->
+            <section class="story-section" data-chapter="2" data-title="03 / 07 · 烤鱼与烧烤">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                        <span>烤鱼的雾气与烧烤的炭火</span>
+                        <span>96腊月鼠 × 98九月虎</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        98年九月的大老虎，<br>
+                        甘愿在96年腊月的你面前变成绕指柔。
+                    </h2>
+
+                    <!-- Mobile Touch Switch Capsules: 第一次见面·烤鱼 / 第二次见面·烧烤 -->
+                    <div class="stagger-line d-3 space-y-2">
+                        <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-black/35 border border-white/10">
+                            <button id="tab-fish" class="py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all">
+                                「 第一次见面 · 烤鱼 」
+                            </button>
+                            <button id="tab-bbq" class="py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all">
+                                「 第二次见面 · 烧烤 」
+                            </button>
+                        </div>
+
+                        <div id="dinner-memory-box" class="p-3 rounded-2xl bg-black/25 border border-[#ff9e6d]/20 text-[12.5px] text-slate-200/90 leading-[1.86] font-light">
+                            第一次见面，我们去吃了热气腾腾的<span class="underline-warm">烤鱼</span>。隔着烤鱼盘咕嘟咕嘟升起的雾气，看着对面的你温柔地笑，我心里突然冒出一个强烈的念头——往后的每一顿饭，我都不想再一个人吃了。
+                        </div>
+                    </div>
+
+                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.88] font-light tracking-wide">
+                        你是<span class="text-[#f4b8b4] font-normal">96年腊月属老鼠</span>的姑娘，在寒冬岁末出生，细腻、柔软又坚韧；我是<span class="text-[#ff9e6d] font-normal">98年九月属老虎</span>的男孩。98年九月出生的老虎，在外面可以替你挡下所有风雨；可在96年腊月出生的你面前，我所有的脾气和锋芒，都甘愿变成绕指柔。
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 4: 每晚打到深夜的电话 · 聊未来、聊规划、聊八卦、聊人生
+            ========================================================== -->
+            <section class="story-section" data-chapter="3" data-title="04 / 07 · 打到深夜的电话">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                        <span>每晚打到深夜的电话</span>
+                        <span>LATE NIGHT CALLS</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        原来最好的安全感，<br>
+                        是夜深人静时，耳机里永远有你的声音。
+                    </h2>
+
+                    <!-- Realistic Late-Night Phone Call UI Card -->
+                    <div id="night-call-card" class="stagger-line d-3 p-3 rounded-2xl bg-[#050811]/85 border border-[#f3d5a5]/25 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span class="text-[12px] text-[#f3d5a5] tracking-wider">通话中 · 玲玲 ♡</span>
+                                <span id="call-duration-clock" class="font-mono text-[11px] text-emerald-300/90 pl-1">02:48:19</span>
+                            </div>
+                            <!-- Animated Audio Waveform Bars -->
+                            <div class="flex items-center gap-1 h-5 px-1">
+                                <span class="wave-bar w-1 h-3 bg-[#f3d5a5]/85 rounded-full" style="animation-delay:0.05s"></span>
+                                <span class="wave-bar w-1 h-4.5 bg-[#ff9e6d]/90 rounded-full" style="animation-delay:0.22s"></span>
+                                <span class="wave-bar w-1 h-2.5 bg-[#f4b8b4]/80 rounded-full" style="animation-delay:0.15s"></span>
+                                <span class="wave-bar w-1 h-5 bg-[#f7ebe8] rounded-full" style="animation-delay:0.38s"></span>
+                                <span class="wave-bar w-1 h-3.5 bg-[#ff9e6d]/85 rounded-full" style="animation-delay:0.12s"></span>
+                                <span class="wave-bar w-1 h-4 bg-[#f3d5a5]/90 rounded-full" style="animation-delay:0.28s"></span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Topic Pills -->
+                        <div class="grid grid-cols-4 gap-1.5 pt-0.5">
+                            <button data-topic="gossip" class="topic-pill py-1 rounded-lg text-[11px] bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all"># 聊八卦</button>
+                            <button data-topic="life" class="topic-pill py-1 rounded-lg text-[11px] bg-white/5 text-slate-300 border border-white/10 transition-all"># 聊人生</button>
+                            <button data-topic="future" class="topic-pill py-1 rounded-lg text-[11px] bg-white/5 text-slate-300 border border-white/10 transition-all"># 聊未来</button>
+                            <button data-topic="plan" class="topic-pill py-1 rounded-lg text-[11px] bg-white/5 text-slate-300 border border-white/10 transition-all"># 聊规划</button>
+                        </div>
+
+                        <p id="topic-monologue" class="text-[11.5px] text-[#fae3c6]/90 leading-[1.7] font-light bg-white/[0.03] px-2.5 py-1.5 rounded-xl">
+                            💬 “白天受了什么委屈、遇到了什么好笑的八卦，只要晚上讲给你听，所有的疲惫都会变成笑声。”
+                        </p>
+                    </div>
+
+                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.9] font-light tracking-wide">
+                        我们都在北京北漂，白天各自在生活里奔波，可只要到了晚上，听筒里传来你的声音，一整天的疲惫就全都卸下了。我们<span class="underline-warm">每天晚上打电话打到深夜</span>，从琐碎有趣的八卦聊到漫长的人生，再从眼前的生活聊到属于我们的未来和规划……有你在电话那头，北京的夜就再也不冷了。
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 5: 2026.11.09 凌晨03:02 · 心疼你的懂事，以后换我好好爱你
+            ========================================================== -->
+            <section class="story-section" data-chapter="4" data-title="05 / 07 · 心疼你的懂事">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f4b8b4]/90 tracking-[0.14em]">
+                        <span>2026.11.09 凌晨03:02 · 我们在一起啦</span>
+                        <span class="font-mono">03:02 AM</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        你总是懂事得让人心疼，<br>
+                        以前的苦翻篇了，以后换我好好爱你。
+                    </h2>
+
+                    <!-- Live Together Timer Card from 2026-11-09T03:02:00 -->
+                    <div class="stagger-line d-3 py-2 px-3 rounded-2xl bg-[#050811]/80 border border-[#f4b8b4]/30 flex items-center justify-between">
+                        <span class="text-[10.5px] text-slate-400 tracking-wider">自 11.09 凌晨 03:02 相恋</span>
+                        <span id="love-timer-text" class="font-mono text-[12.5px] text-[#f3d5a5] font-medium tracking-wider">
+                            --天 --小时 --分 --秒
+                        </span>
+                    </div>
+
+                    <div class="stagger-line d-4 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.9] font-light tracking-wide">
+                        <p>
+                            2026年11月9日凌晨3点02分，我们终于在一起了。玲玲，越靠近你，我就越心疼你。你总是那么体贴、那么替别人着想，<span class="underline-warm font-normal">懂事得让人心疼</span>。
+                        </p>
+                        <p>
+                            我知道<span class="text-[#f4b8b4] font-normal">这些年你一个人走了很多夜路，受了很多委屈，吃了很多苦</span>，却总是咬着牙自己扛。我想抱紧你告诉你：
+                        </p>
+                    </div>
+
+                    <!-- Highlighted Tear-jerking Vow Quote -->
+                    <div class="stagger-line d-5 p-3 rounded-2xl bg-gradient-to-br from-[#f4b8b4]/[0.12] to-[#f3d5a5]/[0.07] border-l-2 border-[#f4b8b4] text-[12.5px] text-[#fcebe9] leading-[1.86] font-normal tracking-wide">
+                        “以前的苦都翻篇了，以后有我，我会好好爱你，好好对你。在我这里，你永远不用再懂事，不用再坚强，你可以尽情撒娇、任性，做被我稳稳接住的小女孩。”
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 6: 我们的远方与约定 · 明年一起去赛里木湖领结婚证
+            ========================================================== -->
+            <section class="story-section" data-chapter="5" data-title="06 / 07 · 明年赛里木湖领证">
+                <div class="sayram-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#38bdf8]/90 tracking-[0.14em]">
+                        <span>大西洋最后一滴眼泪 · 我们的约定</span>
+                        <span>SAYRAM LAKE · 2027</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-sayram leading-[1.58]">
+                        一起去好多好玩的地方，<br>
+                        明年，我们去赛里木湖领结婚证。
+                    </h2>
+
+                    <div class="stagger-line d-3 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.88] font-light tracking-wide">
+                        <p>
+                            在那些打到深夜的电话里，我们一起规划了好多好多好玩的地方。我不想只陪你走过北京的四季，我还要带你去看旷野的风、看山海的辽阔。
+                        </p>
+                        <p>
+                            最重要的是我们定下的那个约定——<span class="underline-sayram font-normal">明年，我们要一起去赛里木湖领结婚证</span>。听说那里是大西洋最后一滴眼泪，有着全中国最纯净的蓝。我想在雪山和湖水的见证下，把“我们”写进小红本里，让大西洋的最后一滴眼泪，变成你余生每一天都被偏爱的幸福眼泪。
+                        </p>
+                    </div>
+
+                    <!-- Interactive Tappable Romantic Plan Checklist -->
+                    <div class="stagger-line d-4 space-y-1.5 pt-0.5">
+                        <div class="text-[10.5px] text-[#bae6fd]/75 tracking-widest flex items-center justify-between">
+                            <span>我们的浪漫规划清单（轻触点亮心愿）</span>
+                            <span id="plan-progress">已点亮 3/3</span>
+                        </div>
+                        <button data-plan="1" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[12px] text-[#e0f2fe] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold">✓</span>
+                            <span>1. 走遍我们深夜电话里聊过的好玩地方</span>
+                        </button>
+                        <button data-plan="2" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[12px] text-[#e0f2fe] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold">✓</span>
+                            <span>2. 明年一起奔赴新疆赛里木湖看雪山与蓝湖</span>
+                        </button>
+                        <button data-plan="3" class="plan-item w-full p-2 rounded-xl bg-gradient-to-r from-[#38bdf8]/25 to-[#f3d5a5]/20 border border-[#f3d5a5]/45 flex items-center gap-2.5 text-left text-[12px] text-[#fff9f0] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#f3d5a5] text-[#060913] flex items-center justify-center text-[10px] font-bold">♡</span>
+                            <span>3. 在赛里木湖见证下，领属于我们的结婚证</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =========================================================
+                 CHAPTER 7: 终章 · 玲玲，和你在一起真的很幸福
+            ========================================================== -->
+            <section class="story-section" data-chapter="6" data-title="07 / 07 · 和你在一起很幸福">
+                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
+                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/80 tracking-[0.14em]">
+                        <span>终章 · 写给我的准新娘</span>
+                        <span>TRUE HAPPINESS</span>
+                    </div>
+
+                    <h2 class="stagger-line d-2 text-[18px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                        玲玲，谢谢你来到我身边，<br>
+                        和你在一起，真的很幸福。
+                    </h2>
+
+                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/95 leading-[1.94] font-light tracking-wide">
+                        <p>
+                            以前我总觉得幸福是很遥远的事，直到在 10月30日 11:42 遇见你，直到和你吃烤鱼、吃烧烤，打每一通到深夜的电话，在 11月9日 凌晨3:02 牵起你的手，规划每一个有你的明天，我才无比笃定——<span class="underline-warm font-normal">和你在一起，真的很幸福。</span>
+                        </p>
+                        <p>
+                            往后余生，风雨我撑伞，平淡我陪你。我们一步一步，从北京的出租屋走到赛里木湖的民政局，再牵着手走到白发苍苍。
+                        </p>
+                        <p class="text-right text-[11.5px] text-[#f3d5a5]/90 pt-0.5 tracking-widest">
+                            —— 永远深爱你的 98年大老虎
+                        </p>
+                    </div>
+
+                    <!-- Primary Mobile Finale Interactive Button -->
+                    <div class="stagger-line d-4 pt-1">
+                        <button id="btn-sayram-finale" class="btn-glow w-full py-3.5 rounded-full bg-gradient-to-r from-[#f3d5a5] via-[#bae6fd] to-[#ff9e6d] text-[#060913] text-[13px] tracking-[0.18em] font-medium active:scale-95 transition-transform">
+                            「 玲玲，明年赛里木湖见 ♡ 」
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 6. BOTTOM UPWARD SWIPE HINT (Auto-hidden on Chapter 7) -->
+        <div id="bottom-swipe-hint" class="absolute bottom-[calc(env(safe-area-inset-bottom,8px)+8px)] left-0 right-0 z-20 flex flex-col items-center gap-0.5 pointer-events-none opacity-0 transition-opacity duration-500">
+            <span class="text-[10px] text-[#f3d5a5]/60 tracking-[0.22em] font-light">向上轻滑 · 继续阅读</span>
+            <svg class="w-3.5 h-3.5 text-[#f3d5a5]/60 swipe-hint" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+            </svg>
+        </div>
+
+        <!-- 7. MOBILE BOTTOM SHEET MODAL (Triggered by「 玲玲，明年赛里木湖见 ♡ 」) -->
+        <div id="whisper-backdrop" class="absolute inset-0 z-50 bg-black/65 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-500 flex items-end justify-center">
+            <div id="whisper-sheet" class="w-full rounded-t-3xl bg-gradient-to-b from-[#11192e] to-[#070a14] border-t border-[#f3d5a5]/35 p-5 pb-[calc(env(safe-area-inset-bottom,14px)+1.2rem)] transform translate-y-full transition-transform duration-500 ease-out space-y-4 shadow-[0_-20px_60px_rgba(0,0,0,0.9)]">
+                <div class="w-10 h-1 rounded-full bg-white/20 mx-auto"></div>
+
+                <div class="flex items-center justify-between">
+                    <span class="text-xs tracking-[0.18em] text-[#f3d5a5]">写给玲玲的悄悄话 · 赛里木湖之约</span>
+                    <span class="text-xs text-[#38bdf8]">96鼠 × 98虎</span>
+                </div>
+
+                <p class="text-[13.5px] text-slate-100 leading-[2.05] font-light tracking-wider">
+                    “玲玲，如果看到这里眼睛红了，现在就给我发个消息或者打个电话吧。<br>
+                    不管多晚，你的98年大老虎永远在线，随时准备哄我的小姑娘。”
+                </p>
+
+                <!-- Interactive Seal / Fingerprint Promise Box -->
+                <div class="p-3.5 rounded-2xl bg-white/[0.04] border border-[#38bdf8]/30 flex items-center justify-between gap-3 relative overflow-hidden">
+                    <div class="space-y-1">
+                        <div class="text-[12px] text-[#bae6fd] font-normal tracking-wider">
+                            明年赛里木湖领证约定书
+                        </div>
+                        <div id="seal-status-text" class="text-[11px] text-slate-400 font-light">
+                            点击右侧印章，盖下属于我们的约定 ♡
+                        </div>
+                    </div>
+
+                    <button id="btn-stamp-promise" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#38bdf8]/25 to-[#f3d5a5]/25 border border-[#f3d5a5]/45 text-[#f3d5a5] text-[11.5px] tracking-widest active:scale-90 transition-all shrink-0">
+                        盖下约定印章
+                    </button>
+
+                    <!-- Visual Red/Gold Stamp Badge (Revealed on Tap) -->
+                    <div id="promise-stamp-badge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded border-2 border-[#f4b8b4] text-[#f4b8b4] text-[10.5px] font-medium tracking-widest bg-[#060913]/90 pointer-events-none">
+                        赛里木湖 · 永结同心
+                    </div>
+                </div>
+
+                <div class="pt-1 flex gap-3">
+                    <button id="btn-more-lanterns" class="flex-1 py-3 rounded-full bg-[#38bdf8]/15 border border-[#38bdf8]/35 text-[#bae6fd] text-xs tracking-[0.16em] active:scale-95 transition-transform">
+                        再放漫天星火 ✨
+                    </button>
+                    <button id="btn-close-sheet" class="flex-1 py-3 rounded-full bg-gradient-to-r from-[#f3d5a5] to-[#ff9e6d] text-[#060913] text-xs tracking-[0.16em] font-medium active:scale-95 transition-transform">
+                        好，现在就找你
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT: TIMERS, AUDIO SYNTH, 7-CHAPTER 3D PARTICLES
+    ========================================================== -->
+    <script>
+        /**************************************************************
+         * 1. REAL-TIME TIMERS (2026-10-30 11:42 & 2026-11-09 03:02)
+         **************************************************************/
+        const TIME_MET = new Date(2026, 9, 30, 11, 42, 0).getTime();
+        const TIME_LOVE = new Date(2026, 10, 9, 3, 2, 0).getTime();
+        let callSeconds = 2 * 3600 + 48 * 60 + 19; // 02:48:19 ticking live
+
+        function formatDuration(diffMs) {
+            const totalSec = Math.floor(Math.abs(diffMs) / 1000);
+            const days = Math.floor(totalSec / 86400);
+            const hours = Math.floor((totalSec % 86400) / 3600);
+            const mins = Math.floor((totalSec % 3600) / 60);
+            const secs = totalSec % 60;
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${days}天 ${pad(hours)}小时 ${pad(mins)}分 ${pad(secs)}秒`;
+        }
+
+        function updateClocks() {
+            const now = Date.now();
+            const metEl = document.getElementById('met-timer-text');
+            const loveEl = document.getElementById('love-timer-text');
+            const callEl = document.getElementById('call-duration-clock');
+            if (metEl) metEl.textContent = formatDuration(now - TIME_MET);
+            if (loveEl) loveEl.textContent = formatDuration(now - TIME_LOVE);
+            if (callEl) {
+                callSeconds++;
+                const ch = String(Math.floor(callSeconds / 3600)).padStart(2, '0');
+                const cm = String(Math.floor((callSeconds % 3600) / 60)).padStart(2, '0');
+                const cs = String(callSeconds % 60).padStart(2, '0');
+                callEl.textContent = `${ch}:${cm}:${cs}`;
+            }
+        }
+        setInterval(updateClocks, 1000);
+        updateClocks();
+
+        /**************************************************************
+         * 2. SUBTLE MOBILE TOAST (No alert() or confirm() ever used)
+         **************************************************************/
+        function showMobileToast(text) {
+            const box = document.getElementById('toast-box');
+            if (!box) return;
+            const el = document.createElement('div');
+            el.className = 'toast-msg minimal-pill px-4 py-2 rounded-full text-[11.5px] text-[#f3d5a5] tracking-wider text-center shadow-xl';
+            el.textContent = text;
+            box.appendChild(el);
+            setTimeout(() => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 3200);
+        }
+
+        /**************************************************************
+         * 3. WEB AUDIO API TENDER MUSIC BOX & NIGHT PIANO SYNTH
+         **************************************************************/
+        class NightPianoBox {
+            constructor() {
+                this.ctx = null;
+                this.playing = false;
+                this.timer = null;
+                this.idx = 0;
+                this.notes = [
+                    { f: 311.13, b: 155.56, d: 3.0 }, { f: 392.00, d: 2.4 }, { f: 466.16, d: 2.5 }, { f: 622.25, d: 3.0 },
+                    { f: 261.63, b: 130.81, d: 3.0 }, { f: 392.00, d: 2.4 }, { f: 466.16, d: 2.5 }, { f: 587.33, d: 3.0 },
+                    { f: 207.65, b: 103.83, d: 3.0 }, { f: 311.13, d: 2.4 }, { f: 392.00, d: 2.5 }, { f: 523.25, d: 3.0 },
+                    { f: 233.08, b: 116.54, d: 3.0 }, { f: 349.23, d: 2.4 }, { f: 440.00, d: 2.5 }, { f: 523.25, d: 3.2 }
+                ];
+            }
+
+            ensureCtx() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playNote(freq, dur = 2.6, vol = 0.065, isBass = false) {
+                if (!this.ctx || !this.playing) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const overtone = this.ctx.createOscillator();
+                const filter = this.ctx.createBiquadFilter();
+                const gain = this.ctx.createGain();
+
+                osc.type = isBass ? 'triangle' : 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+
+                overtone.type = 'sine';
+                overtone.frequency.setValueAtTime(freq * 2, now);
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(isBass ? 380 : 1350, now);
+
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.linearRampToValueAtTime(vol, now + 0.045);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+                const overGain = this.ctx.createGain();
+                overGain.gain.setValueAtTime(0.1, now);
+
+                osc.connect(filter);
+                overtone.connect(overGain);
+                overGain.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                overtone.start(now);
+                osc.stop(now + dur + 0.05);
+                overtone.stop(now + dur + 0.05);
+            }
+
+            playChime(chord = [392.00, 466.16, 587.33, 783.99]) {
+                try {
+                    this.ensureCtx();
+                    chord.forEach((f, i) => {
+                        setTimeout(() => {
+                            if (!this.ctx) return;
+                            const now = this.ctx.currentTime;
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(f, now);
+                            gain.gain.setValueAtTime(0.0001, now);
+                            gain.gain.linearRampToValueAtTime(0.04, now + 0.03);
+                            gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.0);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start(now);
+                            osc.stop(now + 2.05);
+                        }, i * 85);
+                    });
+                } catch (e) {}
+            }
+
+            start() {
+                try {
+                    this.ensureCtx();
+                    if (this.playing) return;
+                    this.playing = true;
+                    this.updateIcon();
+
+                    const stepLoop = () => {
+                        if (!this.playing) return;
+                        const item = this.notes[this.idx % this.notes.length];
+                        this.playNote(item.f, item.d, 0.068, false);
+                        if (item.b) this.playNote(item.b, item.d + 1.0, 0.048, true);
+                        this.idx++;
+                        this.timer = setTimeout(stepLoop, 700);
+                    };
+                    stepLoop();
+                } catch (e) {}
+            }
+
+            toggle() {
+                if (this.playing) {
+                    this.playing = false;
+                    if (this.timer) clearTimeout(this.timer);
+                    this.updateIcon();
+                } else {
+                    this.start();
+                }
+            }
+
+            updateIcon() {
+                const onSvg = document.getElementById('icon-music-on');
+                const offSvg = document.getElementById('icon-music-off');
+                if (!onSvg || !offSvg) return;
+                if (this.playing) {
+                    onSvg.classList.remove('hidden');
+                    offSvg.classList.add('hidden');
+                } else {
+                    onSvg.classList.add('hidden');
+                    offSvg.classList.remove('hidden');
+                }
+            }
+        }
+
+        const soundBox = new NightPianoBox();
+
+        /**************************************************************
+         * 4. THREE.JS 3500-PARTICLE SYSTEM (7 Mobile Chapters)
+         **************************************************************/
+        let scene, camera, renderer;
+        let mainCloud, bgStars, lanternBursts = [];
+        const COUNT = 3500;
+        const BG_COUNT = 950;
+
+        const targetPositions = [[], [], [], [], [], [], []];
+        const targetColors = [[], [], [], [], [], [], []];
+
+        let currentChapter = 0;
+        let targetCameraZ = 30;
+        let touchOffsetX = 0;
+        let touchOffsetY = 0;
+        let clock = new THREE.Clock();
+
+        function createSoftStarTexture() {
+            const c = document.createElement('canvas');
+            c.width = 64;
+            c.height = 64;
+            const ctx = c.getContext('2d');
+            const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            g.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            g.addColorStop(0.32, 'rgba(243, 213, 165, 0.88)');
+            g.addColorStop(0.7, 'rgba(255, 158, 109, 0.24)');
+            g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, 64, 64);
+            return new THREE.CanvasTexture(c);
+        }
+
+        function buildChapterFormations() {
+            const colGold = new THREE.Color('#f3d5a5');
+            const colEmber = new THREE.Color('#ff9e6d');
+            const colRose = new THREE.Color('#f4b8b4');
+            const colWhite = new THREE.Color('#fff9f0');
+            const colColdBlue = new THREE.Color('#64748b');
+            const colSayram = new THREE.Color('#38bdf8');
+            const colSayramDeep = new THREE.Color('#60a5fa');
+
+            for (let i = 0; i < COUNT; i++) {
+                const t = i / COUNT;
+
+                // -----------------------------------------------------
+                // CHAPTER 1 (2026.10.30 11:42 相亲初识): Astral Clock at 11:42 + Converging Streams
+                // -----------------------------------------------------
+                let x0, y0, z0, c0;
+                if (i < COUNT * 0.46) {
+                    const a = t * Math.PI * 26;
+                    const r = 7.2 + (Math.random() - 0.5) * 0.65;
+                    x0 = Math.cos(a) * r;
+                    y0 = Math.sin(a) * r + 2.8;
+                    z0 = (Math.random() - 0.5) * 1.2;
+                    c0 = colGold.clone().lerp(colRose, Math.random() * 0.45);
+                } else if (i < COUNT * 0.62) {
+                    // Hands locked at 11:42
+                    const isHour = (i % 2 === 0);
+                    const rad = isHour ? (98.5 * Math.PI / 180) : (216 * Math.PI / 180);
+                    const len = Math.random() * (isHour ? 4.0 : 6.2);
+                    x0 = Math.cos(rad) * len;
+                    y0 = Math.sin(rad) * len + 2.8;
+                    z0 = 0.5;
+                    c0 = isHour ? colGold.clone() : colEmber.clone();
+                } else {
+                    const side = (i % 2 === 0) ? -1 : 1;
+                    const prog = (i - COUNT * 0.62) / (COUNT * 0.38);
+                    x0 = side * (1 - prog) * 11.5 + (Math.random() - 0.5) * 1.0;
+                    y0 = -11 + prog * 13.8 + (Math.random() - 0.5) * 1.0;
+                    z0 = Math.sin(prog * Math.PI * 3) * 2.5;
+                    c0 = side < 0 ? colGold.clone() : colRose.clone();
+                }
+                targetPositions[0].push(x0, y0, z0);
+                targetColors[0].push(c0.r, c0.g, c0.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 2 (孤独的北漂，因你有了生活的意义): Lonely City Pillars -> Warm Glowing Hearth
+                // -----------------------------------------------------
+                let x1, y1, z1, c1;
+                if (i < COUNT * 0.55) {
+                    // Warm Golden Hearth / Home Light at Top-Center
+                    const u = Math.random() * Math.PI * 2;
+                    const v = Math.acos(2 * Math.random() - 1);
+                    const r = Math.pow(Math.random(), 0.55) * 5.2;
+                    x1 = r * Math.sin(v) * Math.cos(u);
+                    y1 = 3.2 + r * Math.sin(v) * Math.sin(u) * 0.9;
+                    z1 = r * Math.cos(v);
+                    c1 = colGold.clone().lerp(colEmber, Math.random() * 0.6);
+                } else {
+                    // Beijing City Skyline & Subway Streams Rising into Warmth
+                    const colIdx = i % 9;
+                    x1 = (colIdx - 4) * 2.1 + (Math.random() - 0.5) * 0.9;
+                    y1 = -11 + Math.random() * 14.5;
+                    z1 = -2 + (Math.random() - 0.5) * 3.5;
+                    const warmFactor = Math.max(0, (y1 + 11) / 14.5);
+                    c1 = colColdBlue.clone().lerp(colGold, warmFactor);
+                }
+                targetPositions[1].push(x1, y1, z1);
+                targetColors[1].push(c1.r, c1.g, c1.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 3 (烤鱼与烧烤 · 96腊月鼠 × 98九月虎): Binary Stars & Rising Charcoal Embers
+                // -----------------------------------------------------
+                let x2, y2, z2, c2;
+                if (i < COUNT * 0.36) {
+                    // 96年腊月鼠 (Rose Quartz Star)
+                    const u = Math.random() * Math.PI * 2;
+                    const v = Math.acos(2 * Math.random() - 1);
+                    const r = Math.pow(Math.random(), 0.5) * 3.3;
+                    x2 = -3.2 + r * Math.sin(v) * Math.cos(u);
+                    y2 = 3.3 + r * Math.sin(v) * Math.sin(u);
+                    z2 = r * Math.cos(v);
+                    c2 = colRose.clone().lerp(colWhite, 0.35);
+                } else if (i < COUNT * 0.72) {
+                    // 98年九月虎 (Warm Guardian Ember Star)
+                    const u = Math.random() * Math.PI * 2;
+                    const v = Math.acos(2 * Math.random() - 1);
+                    const r = Math.pow(Math.random(), 0.5) * 3.7;
+                    x2 = 3.2 + r * Math.sin(v) * Math.cos(u);
+                    y2 = 3.3 + r * Math.sin(v) * Math.sin(u);
+                    z2 = r * Math.cos(v);
+                    c2 = colEmber.clone().lerp(colGold, 0.5);
+                } else {
+                    // Rising Charcoal Sparks & Steam
+                    x2 = (Math.random() - 0.5) * 15;
+                    y2 = -12 + Math.random() * 22;
+                    z2 = (Math.random() - 0.5) * 8;
+                    c2 = colEmber.clone().lerp(colGold, Math.random());
+                }
+                targetPositions[2].push(x2, y2, z2);
+                targetColors[2].push(c2.r, c2.g, c2.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 4 (每晚打到深夜的电话): Acoustic Soundwave Ribbons Connecting Two Nodes
+                // -----------------------------------------------------
+                let x3, y3, z3, c3;
+                const span = (t - 0.5) * 18;
+                const band = i % 3;
+                const env = Math.cos((t - 0.5) * Math.PI);
+                x3 = span;
+                y3 = Math.sin(span * 0.75 + band * 1.1) * 3.6 * env + 3.0 + (Math.random() - 0.5) * 0.7;
+                z3 = Math.cos(span * 0.5 + band) * 2.5 * env + (Math.random() - 0.5) * 1.1;
+                c3 = colGold.clone().lerp(colRose, (Math.sin(span * 0.4) + 1) * 0.45);
+                targetPositions[3].push(x3, y3, z3);
+                targetColors[3].push(c3.r, c3.g, c3.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 5 (2026.11.09 凌晨03:02 · 心疼你的懂事): Protective Wings Sheltering Rose Star
+                // -----------------------------------------------------
+                let x4, y4, z4, c4;
+                if (i < COUNT * 0.34) {
+                    const u = Math.random() * Math.PI * 2;
+                    const v = Math.acos(2 * Math.random() - 1);
+                    const r = Math.pow(Math.random(), 0.6) * 2.7;
+                    x4 = r * Math.sin(v) * Math.cos(u);
+                    y4 = 3.0 + r * Math.sin(v) * Math.sin(u);
+                    z4 = r * Math.cos(v);
+                    c4 = colRose.clone();
+                } else {
+                    const angle = (Math.random() - 0.5) * Math.PI * 1.78;
+                    const rad = 6.2 + Math.random() * 2.5;
+                    x4 = Math.sin(angle) * rad;
+                    y4 = Math.cos(angle) * rad * 0.85 + 2.8;
+                    z4 = -1.5 + Math.cos(angle) * 2.2 + (Math.random() - 0.5) * 1.6;
+                    c4 = colGold.clone().lerp(colEmber, Math.random() * 0.55);
+                }
+                targetPositions[4].push(x4, y4, z4);
+                targetColors[4].push(c4.r, c4.g, c4.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 6 (明年一起去赛里木湖领结婚证): Sapphire Lake Waves + Snow Mountains + Two Interlocking Rings
+                // -----------------------------------------------------
+                let x5, y5, z5, c5;
+                if (i < COUNT * 0.48) {
+                    // Sapphire Blue Waves of Sayram Lake (赛里木湖湛蓝湖面)
+                    const gx = (Math.random() - 0.5) * 20;
+                    const gz = (Math.random() - 0.5) * 12;
+                    x5 = gx;
+                    y5 = -2.2 + Math.sin(gx * 0.55) * 0.65 + Math.cos(gz * 0.65) * 0.55;
+                    z5 = gz;
+                    c5 = colSayram.clone().lerp(colSayramDeep, Math.random() * 0.6);
+                } else if (i < COUNT * 0.72) {
+                    // Distant Snow-capped Mountains (远方雪山)
+                    const mx = (Math.random() - 0.5) * 20;
+                    const peak1 = Math.max(0, 4.8 - Math.abs(mx + 4.5) * 0.95);
+                    const peak2 = Math.max(0, 5.5 - Math.abs(mx - 3.8) * 0.9);
+                    const mh = Math.max(peak1, peak2);
+                    x5 = mx;
+                    y5 = 0.5 + Math.random() * mh;
+                    z5 = -5.5 + (Math.random() - 0.5) * 1.5;
+                    c5 = colWhite.clone().lerp(colSayram, 0.28);
+                } else {
+                    // Two Glowing Interlocking Wedding Rings Floating Above the Lake (双生婚戒)
+                    const isRingA = (i % 2 === 0);
+                    const ang = Math.random() * Math.PI * 2;
+                    const rRing = 2.7 + (Math.random() - 0.5) * 0.35;
+                    if (isRingA) {
+                        x5 = -1.35 + Math.cos(ang) * rRing;
+                        y5 = 4.6 + Math.sin(ang) * rRing * 0.85;
+                        z5 = Math.sin(ang) * 0.9;
+                        c5 = colGold.clone();
+                    } else {
+                        x5 = 1.35 + Math.cos(ang) * rRing;
+                        y5 = 4.6 + Math.sin(ang) * rRing * 0.85;
+                        z5 = -Math.sin(ang) * 0.9;
+                        c5 = colRose.clone().lerp(colGold, 0.5);
+                    }
+                }
+                targetPositions[5].push(x5, y5, z5);
+                targetColors[5].push(c5.r, c5.g, c5.b);
+
+                // -----------------------------------------------------
+                // CHAPTER 7 (终章 · 和你在一起真的很幸福): 3D Stardust Heart + Sapphire & Golden Lanterns
+                // -----------------------------------------------------
+                let x6, y6, z6, c6;
+                if (i < COUNT * 0.72) {
+                    const phi = Math.random() * Math.PI * 2;
+                    const sc = Math.pow(Math.random(), 0.38) * 0.36;
+                    const hx = 16 * Math.pow(Math.sin(phi), 3);
+                    const hy = 13 * Math.cos(phi) - 5 * Math.cos(2 * phi) - 2 * Math.cos(3 * phi) - Math.cos(4 * phi);
+                    const hz = (Math.random() - 0.5) * 6.5 * Math.sin(phi);
+                    x6 = hx * sc;
+                    y6 = hy * sc + 3.0;
+                    z6 = hz * sc;
+                    c6 = colRose.clone().lerp(colGold, Math.random() * 0.6);
+                } else {
+                    // Rising Golden & Sapphire Wish Lanterns around the Heart
+                    const ang = t * Math.PI * 28;
+                    const rad = 7.6 + (Math.random() - 0.5) * 1.5;
+                    x6 = Math.cos(ang) * rad;
+                    y6 = 2.6 + Math.sin(ang * 2) * 3.2;
+                    z6 = Math.sin(ang) * rad * 0.65;
+                    c6 = (i % 2 === 0) ? colGold.clone() : colSayram.clone();
+                }
+                targetPositions[6].push(x6, y6, z6);
+                targetColors[6].push(c6.r, c6.g, c6.b);
+            }
+        }
+
+        function initMobileWebGL() {
+            const shell = document.getElementById('mobile-shell');
+            const container = document.getElementById('webgl-container');
+            const w = shell.clientWidth;
+            const h = shell.clientHeight;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x060913, 0.015);
+
+            camera = new THREE.PerspectiveCamera(56, w / h, 0.1, 180);
+            camera.position.set(0, 0, 32);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const tex = createSoftStarTexture();
+            buildChapterFormations();
+
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(targetPositions[0]), 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(targetColors[0]), 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 0.56,
+                map: tex,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.92,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+
+            mainCloud = new THREE.Points(geo, mat);
+            scene.add(mainCloud);
+
+            // Distant Night Sky Stars
+            const bgGeo = new THREE.BufferGeometry();
+            const bgPos = new Float32Array(BG_COUNT * 3);
+            const bgCol = new Float32Array(BG_COUNT * 3);
+            for (let i = 0; i < BG_COUNT; i++) {
+                bgPos[i * 3] = (Math.random() - 0.5) * 85;
+                bgPos[i * 3 + 1] = (Math.random() - 0.5) * 95;
+                bgPos[i * 3 + 2] = -15 - Math.random() * 50;
+                const lum = 0.45 + Math.random() * 0.45;
+                bgCol[i * 3] = lum;
+                bgCol[i * 3 + 1] = lum * 0.93;
+                bgCol[i * 3 + 2] = lum * 0.86;
+            }
+            bgGeo.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+            bgGeo.setAttribute('color', new THREE.BufferAttribute(bgCol, 3));
+
+            const bgMat = new THREE.PointsMaterial({
+                size: 0.38,
+                map: tex,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.52,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+            bgStars = new THREE.Points(bgGeo, bgMat);
+            scene.add(bgStars);
+
+            // Finger Touch Interaction to Gently Stir Starlight
+            const onPointerMove = (clientX, clientY) => {
+                const rect = shell.getBoundingClientRect();
+                touchOffsetX = ((clientX - rect.left) / rect.width) * 2 - 1;
+                touchOffsetY = -((clientY - rect.top) / rect.height) * 2 + 1;
+            };
+
+            shell.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches.length > 0) {
+                    onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+                }
+            }, { passive: true });
+
+            shell.addEventListener('mousemove', (e) => {
+                onPointerMove(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('resize', () => {
+                const nw = shell.clientWidth;
+                const nh = shell.clientHeight;
+                camera.aspect = nw / nh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nw, nh);
+            });
+        }
+
+        // Spawn Rising Golden & Sayram Sapphire Sky Lanterns
+        function releaseSkyLanterns(originX = 0, originY = 2.4, count = 115, useSayramBlue = false) {
+            if (!scene || !mainCloud) return;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            const col = new Float32Array(count * 3);
+            const vels = [];
+
+            const cGold = new THREE.Color('#f3d5a5');
+            const cEmber = new THREE.Color('#ff9e6d');
+            const cSayram = new THREE.Color('#38bdf8');
+            const cRose = new THREE.Color('#f4b8b4');
+
+            for (let i = 0; i < count; i++) {
+                pos[i * 3] = originX + (Math.random() - 0.5) * 3.0;
+                pos[i * 3 + 1] = originY + (Math.random() - 0.5) * 2.2;
+                pos[i * 3 + 2] = (Math.random() - 0.5) * 2.2;
+
+                const angle = Math.random() * Math.PI * 2;
+                const spread = 0.04 + Math.random() * 0.14;
+                vels.push({
+                    vx: Math.cos(angle) * spread,
+                    vy: 0.06 + Math.random() * 0.16,
+                    vz: Math.sin(angle) * spread
+                });
+
+                let mixed;
+                if (useSayramBlue) {
+                    mixed = (i % 2 === 0) ? cSayram.clone().lerp(cGold, Math.random() * 0.5) : cGold.clone().lerp(cRose, 0.4);
+                } else {
+                    mixed = cGold.clone().lerp(i % 2 === 0 ? cEmber : cRose, Math.random() * 0.65);
+                }
+                col[i * 3] = mixed.r;
+                col[i * 3 + 1] = mixed.g;
+                col[i * 3 + 2] = mixed.b;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 0.85,
+                map: mainCloud.material.map,
+                vertexColors: true,
+                transparent: true,
+                opacity: 1,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending
+            });
+
+            const pts = new THREE.Points(geo, mat);
+            scene.add(pts);
+            lanternBursts.push({ pts, vels, age: 0, maxAge: 120 });
+        }
+
+        function animateScene() {
+            requestAnimationFrame(animateScene);
+            if (!scene || !camera || !renderer) return;
+
+            const elapsed = clock.getElapsedTime();
+
+            if (mainCloud) {
+                const posAttr = mainCloud.geometry.attributes.position;
+                const colAttr = mainCloud.geometry.attributes.color;
+                const tPos = targetPositions[currentChapter];
+                const tCol = targetColors[currentChapter];
+                const pArr = posAttr.array;
+                const cArr = colAttr.array;
+
+                // Heartbeat pulse scale for Chapter 7
+                const heartPulse = (currentChapter === 6) ? (1 + Math.sin(elapsed * 3.2) * 0.035) : 1;
+
+                for (let i = 0; i < COUNT; i++) {
+                    const idx = i * 3;
+                    let driftY = Math.sin(elapsed * 1.3 + i * 0.05) * 0.022;
+
+                    if (currentChapter === 2 && i >= COUNT * 0.72) {
+                        // Rising charcoal embers on Chapter 3
+                        driftY = 0.035;
+                    } else if (currentChapter === 3) {
+                        // Acoustic voice wave ripple on Chapter 4
+                        driftY = Math.sin(elapsed * 2.8 + i * 0.09) * 0.06;
+                    } else if (currentChapter === 5 && i < COUNT * 0.48) {
+                        // Gently shimmering Sayram Lake waves on Chapter 6
+                        driftY = Math.sin(elapsed * 2.0 + pArr[idx] * 0.6) * 0.035;
+                    }
+
+                    const tx = tPos[idx] * heartPulse;
+                    const ty = tPos[idx + 1] * heartPulse;
+                    const tz = tPos[idx + 2] * heartPulse;
+
+                    pArr[idx] += (tx - pArr[idx]) * 0.045;
+                    pArr[idx + 1] += (ty - pArr[idx + 1]) * 0.045 + driftY;
+                    pArr[idx + 2] += (tz - pArr[idx + 2]) * 0.045;
+
+                    cArr[idx] += (tCol[idx] - cArr[idx]) * 0.045;
+                    cArr[idx + 1] += (tCol[idx + 1] - cArr[idx + 1]) * 0.045;
+                    cArr[idx + 2] += (tCol[idx + 2] - cArr[idx + 2]) * 0.045;
+                }
+                posAttr.needsUpdate = true;
+                colAttr.needsUpdate = true;
+
+                const targetRotY = Math.sin(elapsed * 0.25) * 0.16 + touchOffsetX * 0.28;
+                const targetRotX = -touchOffsetY * 0.15;
+                mainCloud.rotation.y += (targetRotY - mainCloud.rotation.y) * 0.05;
+                mainCloud.rotation.x += (targetRotX - mainCloud.rotation.x) * 0.05;
+            }
+
+            if (bgStars) {
+                bgStars.rotation.y = elapsed * 0.012;
+            }
+
+            // Update Rising Sky Lantern Bursts
+            for (let i = lanternBursts.length - 1; i >= 0; i--) {
+                const b = lanternBursts[i];
+                b.age++;
+                const pAttr = b.pts.geometry.attributes.position;
+                const arr = pAttr.array;
+                for (let j = 0; j < b.vels.length; j++) {
+                    arr[j * 3] += b.vels[j].vx;
+                    arr[j * 3 + 1] += b.vels[j].vy;
+                    arr[j * 3 + 2] += b.vels[j].vz;
+                    b.vels[j].vx *= 0.99;
+                    b.vels[j].vz *= 0.99;
+                }
+                pAttr.needsUpdate = true;
+                b.pts.material.opacity = Math.max(0, 1 - b.age / b.maxAge);
+                if (b.age >= b.maxAge) {
+                    scene.remove(b.pts);
+                    b.pts.geometry.dispose();
+                    b.pts.material.dispose();
+                    lanternBursts.splice(i, 1);
+                }
+            }
+
+            camera.position.z += (targetCameraZ - camera.position.z) * 0.045;
+            renderer.render(scene, camera);
+        }
+
+        /**************************************************************
+         * 5. MOBILE UI EVENTS & 7-CHAPTER SCROLL OBSERVER
+         **************************************************************/
+        function bindMobileEvents() {
+            const coverGate = document.getElementById('cover-gate');
+            const btnOpen = document.getElementById('btn-open-letter');
+            const mobileHud = document.getElementById('mobile-hud');
+            const swipeHint = document.getElementById('bottom-swipe-hint');
+            const hudTitle = document.getElementById('hud-page-title');
+            const hudDot = document.getElementById('hud-dot');
+            const scrollStage = document.getElementById('scroll-stage');
+            const sections = document.querySelectorAll('.story-section');
+
+            // 1. Open Cover Letter
+            btnOpen.addEventListener('click', () => {
+                soundBox.start();
+                coverGate.classList.add('opacity-0', 'pointer-events-none');
+                mobileHud.classList.remove('opacity-0', 'pointer-events-none');
+                swipeHint.classList.remove('opacity-0');
+                targetCameraZ = 27;
+                releaseSkyLanterns(0, 2.4, 85, false);
+            });
+
+            // 2. Scroll Snap Observer for 7 Mobile Chapters
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const sec = entry.target;
+                        sec.classList.add('is-visible');
+                        const ch = parseInt(sec.getAttribute('data-chapter'), 10);
+                        const title = sec.getAttribute('data-title') || '';
+
+                        if (currentChapter !== ch) {
+                            currentChapter = ch;
+                            const zMap = [27, 26.5, 26, 27, 25.5, 26, 24.5];
+                            targetCameraZ = zMap[ch] || 26;
+                            soundBox.playChime();
+                        }
+
+                        if (hudTitle) hudTitle.textContent = title;
+                        if (hudDot) {
+                            if (ch === 5) {
+                                hudDot.className = 'w-1.5 h-1.5 rounded-full bg-[#38bdf8] shadow-[0_0_6px_#38bdf8]';
+                            } else {
+                                hudDot.className = 'w-1.5 h-1.5 rounded-full bg-[#f3d5a5] shadow-[0_0_6px_#f3d5a5]';
+                            }
+                        }
+
+                        // Hide upward swipe hint on Chapter 7
+                        if (ch === 6) {
+                            swipeHint.classList.add('opacity-0');
+                        } else {
+                            swipeHint.classList.remove('opacity-0');
+                        }
+                    }
+                });
+            }, {
+                root: scrollStage,
+                threshold: 0.55
+            });
+
+            sections.forEach((s) => observer.observe(s));
+
+            // 3. Music Note Toggle
+            document.getElementById('btn-music-toggle').addEventListener('click', () => {
+                soundBox.toggle();
+                showMobileToast(soundBox.playing ? '🎹 夜空旋律已开启' : '🔇 夜空旋律已暂停');
+            });
+
+            // 4. Chapter 2 Interactive Button: Warm up Beijing Night
+            const btnWarmBeijing = document.getElementById('btn-warm-beijing');
+            const warmBeijingLabel = document.getElementById('warm-beijing-label');
+            btnWarmBeijing.addEventListener('click', () => {
+                // Turn all Chapter 2 particles into warm champagne gold & rose
+                const colGold = new THREE.Color('#f3d5a5');
+                const colEmber = new THREE.Color('#ff9e6d');
+                for (let i = 0; i < COUNT; i++) {
+                    const c = colGold.clone().lerp(colEmber, Math.random() * 0.6);
+                    targetColors[1][i * 3] = c.r;
+                    targetColors[1][i * 3 + 1] = c.g;
+                    targetColors[1][i * 3 + 2] = c.b;
+                }
+                releaseSkyLanterns(0, 2.8, 90, false);
+                soundBox.playChime([349.23, 440.00, 523.25, 659.25]);
+                warmBeijingLabel.textContent = '💛 有了玲玲，北京的万家灯火都有了归宿';
+                showMobileToast('✨ 是你让一个人的北漂，变成了两个人的家');
+            });
+
+            // 5. Chapter 3 Capsule Switch: 第一次见面·烤鱼 vs 第二次见面·烧烤
+            const tabFish = document.getElementById('tab-fish');
+            const tabBbq = document.getElementById('tab-bbq');
+            const memoryBox = document.getElementById('dinner-memory-box');
+
+            tabFish.addEventListener('click', () => {
+                tabFish.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all';
+                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
+                memoryBox.innerHTML = '第一次见面，我们去吃了热气腾腾的<span class="underline-warm">烤鱼</span>。隔着烤鱼盘咕嘟咕嘟升起的雾气，看着对面的你温柔地笑，我心里突然冒出一个强烈的念头——往后的每一顿饭，我都不想再一个人吃了。';
+                releaseSkyLanterns(-2.5, 2.5, 65, false);
+                soundBox.playChime([349.23, 440.00, 523.25]);
+            });
+
+            tabBbq.addEventListener('click', () => {
+                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#ff9e6d]/25 text-[#f3d5a5] border border-[#ff9e6d]/40 transition-all';
+                tabFish.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
+                memoryBox.innerHTML = '第二次见面，我们去吃了<span class="underline-warm">烧烤</span>。在滋滋作响的炭火香气里，我们自然地聊着笑着，没有半点生疏。也是在那晚温暖的烟火气里，我笃定了想要一辈子护着你的心。';
+                releaseSkyLanterns(2.5, 2.5, 65, false);
+                soundBox.playChime([392.00, 493.88, 587.33]);
+            });
+
+            // 6. Chapter 4 Topic Pills (# 聊八卦 / # 聊人生 / # 聊未来 / # 聊规划)
+            const topicMonologues = {
+                gossip: '💬 “白天受了什么委屈、遇到了什么好笑的八卦，只要晚上讲给你听，所有的疲惫都会变成笑声。”',
+                life: '💬 “我们聊起各自走过的路，心疼你这些年吃过的苦，也庆幸我们在对的时间遇到了彼此。”',
+                future: '💬 “我们的未来里，有热气腾腾的一日三餐，有去不完的好玩地方，更有永远为你亮着灯的家。”',
+                plan: '💬 “从北京的小家，到明年一起去赛里木湖领结婚证，我所有的人生规划里，女主人公都只有你。”'
+            };
+            const topicBtns = document.querySelectorAll('.topic-pill');
+            const topicBox = document.getElementById('topic-monologue');
+
+            topicBtns.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    topicBtns.forEach((b) => {
+                        b.className = 'topic-pill py-1 rounded-lg text-[11px] bg-white/5 text-slate-300 border border-white/10 transition-all';
+                    });
+                    btn.className = 'topic-pill py-1 rounded-lg text-[11px] bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all';
+                    const key = btn.getAttribute('data-topic');
+                    if (topicBox && topicMonologues[key]) {
+                        topicBox.textContent = topicMonologues[key];
+                    }
+                    releaseSkyLanterns(0, 2.6, 55, false);
+                    soundBox.playChime([311.13, 392.00, 466.16, 622.25]);
+                });
+            });
+
+            // 7. Chapter 6 Romantic Plan Checklist Taps
+            const planItems = document.querySelectorAll('.plan-item');
+            planItems.forEach((item) => {
+                item.addEventListener('click', () => {
+                    const id = item.getAttribute('data-plan');
+                    releaseSkyLanterns(0, 3.0, 80, true);
+                    soundBox.playChime([392.00, 493.88, 587.33, 783.99]);
+                    if (id === '1') {
+                        showMobileToast('✈️ 只要和你一起，去哪里都是最好的风景');
+                    } else if (id === '2') {
+                        showMobileToast('🌊 明年赛里木湖的蓝，一定不及你眼里的光');
+                    } else {
+                        showMobileToast('💍 明年赛里木湖，我们把“我们”写进结婚证里');
+                    }
+                });
+            });
+
+            // 8. Chapter 7 Finale Button:「 玲玲，明年赛里木湖见 ♡ 」
+            const backdrop = document.getElementById('whisper-backdrop');
+            const sheet = document.getElementById('whisper-sheet');
+            const btnSayramFinale = document.getElementById('btn-sayram-finale');
+            const btnMoreLanterns = document.getElementById('btn-more-lanterns');
+            const btnCloseSheet = document.getElementById('btn-close-sheet');
+            const btnStampPromise = document.getElementById('btn-stamp-promise');
+            const stampBadge = document.getElementById('promise-stamp-badge');
+            const sealStatusText = document.getElementById('seal-status-text');
+
+            function triggerSayramStarlightShow() {
+                for (let k = 0; k < 4; k++) {
+                    setTimeout(() => {
+                        releaseSkyLanterns((Math.random() - 0.5) * 6, 1.5 + Math.random() * 2, 95, true);
+                    }, k * 220);
+                }
+                soundBox.playChime([311.13, 392.00, 466.16, 622.25, 783.99]);
+            }
+
+            btnSayramFinale.addEventListener('click', () => {
+                triggerSayramStarlightShow();
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                sheet.classList.remove('translate-y-full');
+            });
+
+            btnStampPromise.addEventListener('click', () => {
+                btnStampPromise.classList.add('opacity-0', 'pointer-events-none');
+                stampBadge.classList.remove('hidden');
+                stampBadge.classList.add('stamp-active');
+                if (sealStatusText) {
+                    sealStatusText.textContent = '已盖章生效 · 明年赛里木湖我们不见不散 ♡';
+                    sealStatusText.className = 'text-[11px] text-[#f3d5a5] font-normal';
+                }
+                triggerSayramStarlightShow();
+                showMobileToast('💍 赛里木湖之约已盖章，余生请多指教，玲玲');
+            });
+
+            btnMoreLanterns.addEventListener('click', () => {
+                triggerSayramStarlightShow();
+                showMobileToast('✨ 漫天星火与赛里木湖的蓝，皆是我给玲玲的偏爱');
+            });
+
+            btnCloseSheet.addEventListener('click', () => {
+                sheet.classList.add('translate-y-full');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                triggerSayramStarlightShow();
+                showMobileToast('💛 玲玲，你的98年大老虎正在电话这头等你');
+            });
+
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) {
+                    sheet.classList.add('translate-y-full');
+                    backdrop.classList.add('opacity-0', 'pointer-events-none');
+                }
+            });
+        }
+
+        window.onload = function () {
+            initMobileWebGL();
+            bindMobileEvents();
+            animateScene();
+        };
+    </script>
+</body>
+</html>
