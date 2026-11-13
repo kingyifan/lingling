@@ -110,40 +110,71 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: calc(env(safe-area-inset-top, 12px) + 2.8rem) 1.15rem calc(env(safe-area-inset-bottom, 12px) + 2.6rem);
+            padding: calc(env(safe-area-inset-top, 8px) + 3.1rem) 1rem calc(env(safe-area-inset-bottom, 8px) + 2.3rem);
             position: relative;
         }
 
-        /* Mobile Letter Glass Card */
+        /* Mobile Letter Glass Card - Fixed Mobile Padding & Overflow Protection */
         .letter-card {
-            background: linear-gradient(165deg, rgba(14, 20, 38, 0.70) 0%, rgba(8, 11, 23, 0.56) 100%);
+            width: 100%;
+            max-height: calc(100dvh - 5.6rem);
+            overflow-y: auto;
+            scrollbar-width: none;
+            padding: 1.2rem 1.15rem;
+            background: linear-gradient(165deg, rgba(14, 20, 38, 0.76) 0%, rgba(8, 11, 23, 0.64) 100%);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(243, 213, 165, 0.16);
+            border: 1px solid rgba(243, 213, 165, 0.22);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.68);
+            word-break: break-word;
         }
 
-        /* Sayram Lake Special Glass Card */
+        .letter-card::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Sayram Lake Special Glass Card - Fixed Mobile Padding & Overflow Protection */
         .sayram-card {
-            background: linear-gradient(165deg, rgba(10, 25, 48, 0.72) 0%, rgba(7, 14, 28, 0.58) 100%);
+            width: 100%;
+            max-height: calc(100dvh - 5.6rem);
+            overflow-y: auto;
+            scrollbar-width: none;
+            padding: 1.2rem 1.15rem;
+            background: linear-gradient(165deg, rgba(10, 25, 48, 0.78) 0%, rgba(7, 14, 28, 0.64) 100%);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.25);
+            border: 1px solid rgba(56, 189, 248, 0.28);
             box-shadow: 0 20px 50px rgba(3, 12, 28, 0.75);
+            word-break: break-word;
+        }
+
+        .sayram-card::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Compact adaptation for smaller height viewports (like WeChat browser with bottom bar) */
+        @media (max-height: 700px) {
+            .story-section {
+                padding: calc(env(safe-area-inset-top, 4px) + 2.75rem) 0.9rem calc(env(safe-area-inset-bottom, 4px) + 1.8rem);
+            }
+            .letter-card, .sayram-card {
+                padding: 1rem 1rem;
+                max-height: calc(100dvh - 4.7rem);
+            }
         }
 
         .minimal-pill {
-            background: rgba(11, 15, 29, 0.72);
+            background: rgba(11, 15, 29, 0.78);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(243, 213, 165, 0.18);
+            border: 1px solid rgba(243, 213, 165, 0.2);
         }
 
         /* Staggered Line-by-Line Fade-In on Scroll */
         .stagger-line {
             opacity: 0;
-            transform: translateY(16px);
-            transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(14px);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .story-section.is-visible .stagger-line {
@@ -152,11 +183,11 @@
         }
 
         .d-1 { transition-delay: 0.08s; }
-        .d-2 { transition-delay: 0.22s; }
-        .d-3 { transition-delay: 0.36s; }
-        .d-4 { transition-delay: 0.50s; }
-        .d-5 { transition-delay: 0.64s; }
-        .d-6 { transition-delay: 0.78s; }
+        .d-2 { transition-delay: 0.20s; }
+        .d-3 { transition-delay: 0.32s; }
+        .d-4 { transition-delay: 0.44s; }
+        .d-5 { transition-delay: 0.56s; }
+        .d-6 { transition-delay: 0.68s; }
 
         /* Typography & Warm Highlights */
         .text-champagne {
@@ -220,14 +251,18 @@
             animation: spinNote 10s linear infinite;
         }
 
-        /* Toast Fade */
+        /* Fixed Centered Toast Fade (Removed duplicate -50% X shift that caused left cutoff) */
         @keyframes toastPop {
-            0% { opacity: 0; transform: translate(-50%, 10px); }
-            15%, 85% { opacity: 1; transform: translate(-50%, 0); }
-            100% { opacity: 0; transform: translate(-50%, -8px); }
+            0% { opacity: 0; transform: translateY(10px) scale(0.96); }
+            15%, 85% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-8px) scale(0.96); }
         }
         .toast-msg {
             animation: toastPop 3.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            max-width: 100%;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.45;
         }
 
         /* Seal Stamp Animation */
@@ -250,13 +285,13 @@
         <div id="webgl-container"></div>
         <div class="vignette-overlay"></div>
 
-        <!-- 2. NON-INTRUSIVE TOP TOAST -->
-        <div id="toast-box" class="absolute top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none w-[88%] flex flex-col items-center gap-1.5"></div>
+        <!-- 2. NON-INTRUSIVE TOP TOAST (Perfectly Centered in Mobile Shell) -->
+        <div id="toast-box" class="absolute top-14 inset-x-0 mx-auto z-50 pointer-events-none w-[90%] flex flex-col items-center gap-1.5"></div>
 
         <!-- 3. COVER OVERLAY (封面：玲玲，展信佳) -->
-        <div id="cover-gate" class="absolute inset-0 z-40 flex flex-col justify-between px-7 py-10 bg-[#060913]/92 backdrop-blur-xl transition-opacity duration-1000">
+        <div id="cover-gate" class="absolute inset-0 z-40 flex flex-col justify-between px-6 py-8 bg-[#060913]/92 backdrop-blur-xl transition-opacity duration-1000">
             <!-- Top Subtle Coordinates -->
-            <div class="pt-3 text-center space-y-1">
+            <div class="pt-2 text-center space-y-1">
                 <p class="font-en italic text-[11px] tracking-[0.26em] text-[#f3d5a5]/65 uppercase">
                     Beijing · Sayram Lake · Forever
                 </p>
@@ -284,14 +319,14 @@
 
                 <div class="w-12 h-[1px] bg-gradient-to-r from-transparent via-[#f3d5a5]/45 to-transparent mx-auto"></div>
 
-                <p class="text-[13px] text-slate-300/90 leading-[2.12] font-light tracking-wider">
+                <p class="text-[13px] text-slate-300/90 leading-[2.05] font-light tracking-wider">
                     没遇见你之前，一帆只是一个人在北京熬日子；<br>
                     遇见你之后，晚风有了温度，北漂有了意义。<br>
                     这是一封写给最让我心疼、也让我最幸福的姑娘的信，<br>
                     关于我们的过去、深夜的电话，和明年的约定。
                 </p>
 
-                <div class="pt-3">
+                <div class="pt-2">
                     <button id="btn-open-letter" class="btn-glow w-full max-w-[240px] py-3.5 rounded-full bg-gradient-to-r from-[#f3d5a5] via-[#fae5c3] to-[#ff9e6d] text-[#060913] text-[13px] tracking-[0.22em] font-medium active:scale-95 transition-transform">
                         玲玲，开启我们的故事
                     </button>
@@ -333,18 +368,18 @@
                  CHAPTER 1: 2026.10.30 11:42 · 以相亲之名，赴一场命中注定
             ========================================================== -->
             <section class="story-section is-visible" data-chapter="0" data-title="01 / 07 · 11:42 命中注定">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f3d5a5]/75 tracking-[0.12em]">
                         <span>以相亲之名，赴一场命中注定</span>
-                        <span class="font-mono">2026.10.30 11:42</span>
+                        <span class="font-mono shrink-0">2026.10.30 11:42</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         老天爷怕北京太大、地铁太挤，<br>
                         才借着“相亲”的名义把你推到我面前。
                     </h2>
 
-                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/90 leading-[1.92] font-light tracking-wide">
+                    <div class="stagger-line d-3 space-y-2.5 text-[12.8px] text-slate-200/90 leading-[1.85] font-light tracking-wide">
                         <p>
                             很多人觉得，相亲是一场仓促的世俗安排。可直到 <span class="underline-warm font-normal">2026年10月30日 11:42</span> 遇见你的那一刻，我才恍然明白——这哪里是寻常的相亲。
                         </p>
@@ -353,7 +388,7 @@
                         </p>
                     </div>
 
-                    <div class="stagger-line d-4 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
+                    <div class="stagger-line d-4 pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
                         <span>初识至今已走过</span>
                         <span id="met-timer-text" class="font-mono text-[#f3d5a5] tracking-wider">--天 --小时 --分 --秒</span>
                     </div>
@@ -364,18 +399,18 @@
                  CHAPTER 2: 孤独的北漂，因你有了生活的意义
             ========================================================== -->
             <section class="story-section" data-chapter="1" data-title="02 / 07 · 北漂有了意义">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f3d5a5]/75 tracking-[0.12em]">
                         <span>孤独的北漂 · 因你有了光</span>
-                        <span>BEIJING WITH YOU</span>
+                        <span class="shrink-0">BEIJING WITH YOU</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         以前一个人的北漂只是活着，<br>
                         有了你之后，我的生活才有了意义。
                     </h2>
 
-                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/90 leading-[1.92] font-light tracking-wide">
+                    <div class="stagger-line d-3 space-y-2.5 text-[12.8px] text-slate-200/90 leading-[1.85] font-light tracking-wide">
                         <p>
                             没遇到你之前，北京对我来说只有加班后的末班地铁、一个人随便应付的外卖，和推开门后漆黑冷清的房间。那时候的日子，只是日复一日地熬。
                         </p>
@@ -386,9 +421,9 @@
 
                     <!-- Interactive Touch to Warm Beijing Night -->
                     <div class="stagger-line d-4 pt-1">
-                        <button id="btn-warm-beijing" class="w-full py-2.5 px-3.5 rounded-2xl bg-[#f3d5a5]/10 border border-[#f3d5a5]/30 flex items-center justify-between text-[12px] text-[#f3d5a5] active:scale-[0.98] transition-all">
-                            <span id="warm-beijing-label">✨ 轻触点亮：属于我们两个人的万家灯火</span>
-                            <span class="text-[11px] opacity-75">点亮暖光 →</span>
+                        <button id="btn-warm-beijing" class="w-full py-2.5 px-3.5 rounded-2xl bg-[#f3d5a5]/10 border border-[#f3d5a5]/30 flex items-center justify-between gap-2 text-left text-[12px] text-[#f3d5a5] active:scale-[0.98] transition-all">
+                            <span id="warm-beijing-label" class="leading-snug">✨ 轻触点亮：属于我们两个人的万家灯火</span>
+                            <span class="text-[11px] opacity-75 shrink-0">点亮暖光 →</span>
                         </button>
                     </div>
                 </div>
@@ -398,13 +433,13 @@
                  CHAPTER 3: 烤鱼的雾气与烤肉的炭火 · 96年腊月鼠 × 98年九月虎
             ========================================================== -->
             <section class="story-section" data-chapter="2" data-title="03 / 07 · 烤鱼与烤肉">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f3d5a5]/75 tracking-[0.12em]">
                         <span>烤鱼的雾气与烤肉的炭火</span>
-                        <span>96腊月鼠 × 98九月虎</span>
+                        <span class="shrink-0">96腊月鼠 × 98九月虎</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         98年九月的大老虎，<br>
                         甘愿在96年腊月的你面前变成绕指柔。
                     </h2>
@@ -412,20 +447,20 @@
                     <!-- Mobile Touch Switch Capsules: 第一次见面·烤鱼 / 第二次见面·烤肉 -->
                     <div class="stagger-line d-3 space-y-2">
                         <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-black/35 border border-white/10">
-                            <button id="tab-fish" class="py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all">
+                            <button id="tab-fish" class="py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all">
                                 「 第一次见面 · 烤鱼 」
                             </button>
-                            <button id="tab-bbq" class="py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all">
+                            <button id="tab-bbq" class="py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-light text-slate-400 border border-transparent transition-all">
                                 「 第二次见面 · 烤肉 」
                             </button>
                         </div>
 
-                        <div id="dinner-memory-box" class="p-3 rounded-2xl bg-black/25 border border-[#ff9e6d]/20 text-[12.5px] text-slate-200/90 leading-[1.86] font-light">
+                        <div id="dinner-memory-box" class="p-3 rounded-2xl bg-black/25 border border-[#ff9e6d]/20 text-[12.5px] text-slate-200/90 leading-[1.82] font-light">
                             第一次见面，我们去吃了热气腾腾的<span class="underline-warm">烤鱼</span>。隔着烤鱼盘咕嘟咕嘟升起的雾气，看着对面的你温柔地笑，我心里突然冒出一个强烈的念头——往后的每一顿饭，我都不想再一个人吃了。
                         </div>
                     </div>
 
-                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.88] font-light tracking-wide">
+                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.82] font-light tracking-wide">
                         你是<span class="text-[#f4b8b4] font-normal">96年腊月属老鼠</span>的姑娘，在寒冬岁末出生，细腻、柔软又坚韧；我是<span class="text-[#ff9e6d] font-normal">98年九月属老虎</span>的男孩。98年九月出生的老虎，在外面可以替你挡下所有风雨；可在96年腊月出生的你面前，我所有的脾气和锋芒，都甘愿变成绕指柔。
                     </div>
                 </div>
@@ -435,13 +470,13 @@
                  CHAPTER 4: 每晚打到深夜的电话 · 聊未来、聊规划、聊八卦、聊人生
             ========================================================== -->
             <section class="story-section" data-chapter="3" data-title="04 / 07 · 打到深夜的电话">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/75 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f3d5a5]/75 tracking-[0.12em]">
                         <span>每晚打到深夜的电话</span>
-                        <span>LATE NIGHT CALLS</span>
+                        <span class="shrink-0">LATE NIGHT CALLS</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         原来最好的安全感，<br>
                         是夜深人静时，身旁里永远有你的声音。
                     </h2>
@@ -457,7 +492,7 @@
                             <!-- Animated Audio Waveform Bars -->
                             <div class="flex items-center gap-1 h-5 px-1">
                                 <span class="wave-bar w-1 h-3 bg-[#f3d5a5]/85 rounded-full" style="animation-delay:0.05s"></span>
-                                <span class="wave-bar w-1 h-4.5 bg-[#ff9e6d]/90 rounded-full" style="animation-delay:0.22s"></span>
+                                <span class="wave-bar w-1 h-4 bg-[#ff9e6d]/90 rounded-full" style="animation-delay:0.22s"></span>
                                 <span class="wave-bar w-1 h-2.5 bg-[#f4b8b4]/80 rounded-full" style="animation-delay:0.15s"></span>
                                 <span class="wave-bar w-1 h-5 bg-[#f7ebe8] rounded-full" style="animation-delay:0.38s"></span>
                                 <span class="wave-bar w-1 h-3.5 bg-[#ff9e6d]/85 rounded-full" style="animation-delay:0.12s"></span>
@@ -473,12 +508,12 @@
                             <button data-topic="plan" class="topic-pill py-1 rounded-lg text-[11px] bg-white/5 text-slate-300 border border-white/10 transition-all"># 聊规划</button>
                         </div>
 
-                        <p id="topic-monologue" class="text-[11.5px] text-[#fae3c6]/90 leading-[1.7] font-light bg-white/[0.03] px-2.5 py-1.5 rounded-xl">
+                        <p id="topic-monologue" class="text-[11.5px] text-[#fae3c6]/90 leading-[1.68] font-light bg-white/[0.03] px-2.5 py-1.5 rounded-xl">
                             💬 “白天受了什么委屈、遇到了什么好笑的八卦，只要晚上讲给你听，所有的疲惫都会变成笑声。”
                         </p>
                     </div>
 
-                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.9] font-light tracking-wide">
+                    <div class="stagger-line d-4 text-[12.5px] text-slate-200/90 leading-[1.82] font-light tracking-wide">
                         我们都在北京北漂，白天各自在生活里奔波，可只要到了晚上，听筒里传来你的声音，一整天的疲惫就全都卸下了。我们<span class="underline-warm">每天晚上打电话打到深夜</span>，从琐碎有趣的八卦聊到漫长的人生，再从眼前的生活聊到属于我们的未来和规划……有你在电话那头，北京的夜就再也不冷了。
                     </div>
                 </div>
@@ -488,26 +523,26 @@
                  CHAPTER 5: 2026.11.09 凌晨03:02 · 心疼你的懂事，以后换我好好爱你
             ========================================================== -->
             <section class="story-section" data-chapter="4" data-title="05 / 07 · 心疼你的懂事">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f4b8b4]/90 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f4b8b4]/90 tracking-[0.12em]">
                         <span>2026.11.09 凌晨03:02 · 我们在一起啦</span>
-                        <span class="font-mono">03:02 AM</span>
+                        <span class="font-mono shrink-0">03:02 AM</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         你总是懂事得让人心疼，<br>
                         以前的苦翻篇了，以后换我好好爱你。
                     </h2>
 
                     <!-- Live Together Timer Card from 2026-11-09T03:02:00 -->
-                    <div class="stagger-line d-3 py-2 px-3 rounded-2xl bg-[#050811]/80 border border-[#f4b8b4]/30 flex items-center justify-between">
+                    <div class="stagger-line d-3 py-2 px-3 rounded-2xl bg-[#050811]/80 border border-[#f4b8b4]/30 flex items-center justify-between gap-2">
                         <span class="text-[10.5px] text-slate-400 tracking-wider">自 11.09 凌晨 03:02 相恋</span>
-                        <span id="love-timer-text" class="font-mono text-[12.5px] text-[#f3d5a5] font-medium tracking-wider">
+                        <span id="love-timer-text" class="font-mono text-[12px] text-[#f3d5a5] font-medium tracking-wider shrink-0">
                             --天 --小时 --分 --秒
                         </span>
                     </div>
 
-                    <div class="stagger-line d-4 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.9] font-light tracking-wide">
+                    <div class="stagger-line d-4 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.82] font-light tracking-wide">
                         <p>
                             2026年11月9日凌晨3点02分，我们终于在一起了。玲玲，越靠近你，我就越心疼你。你总是那么体贴、那么替别人着想，<span class="underline-warm font-normal">懂事得让人心疼</span>。
                         </p>
@@ -517,7 +552,7 @@
                     </div>
 
                     <!-- Highlighted Tear-jerking Vow Quote -->
-                    <div class="stagger-line d-5 p-3 rounded-2xl bg-gradient-to-br from-[#f4b8b4]/[0.12] to-[#f3d5a5]/[0.07] border-l-2 border-[#f4b8b4] text-[12.5px] text-[#fcebe9] leading-[1.86] font-normal tracking-wide">
+                    <div class="stagger-line d-5 p-3 rounded-2xl bg-gradient-to-br from-[#f4b8b4]/[0.12] to-[#f3d5a5]/[0.07] border-l-2 border-[#f4b8b4] text-[12.2px] text-[#fcebe9] leading-[1.8] font-normal tracking-wide">
                         “以前的苦都翻篇了，以后有我，我会好好爱你，好好对你。在我这里，你永远不用再懂事，不用再坚强，你可以尽情撒娇、任性，做被我稳稳接住的小女孩。”
                     </div>
                 </div>
@@ -527,18 +562,18 @@
                  CHAPTER 6: 我们的远方与约定 · 明年一起去赛里木湖领结婚证
             ========================================================== -->
             <section class="story-section" data-chapter="5" data-title="06 / 07 · 明年赛里木湖领证">
-                <div class="sayram-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#38bdf8]/90 tracking-[0.14em]">
+                <div class="sayram-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#38bdf8]/90 tracking-[0.12em]">
                         <span>大西洋最后一滴眼泪 · 我们的约定</span>
-                        <span>SAYRAM LAKE · 2027</span>
+                        <span class="shrink-0">SAYRAM LAKE · 2027</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.08em] text-sayram leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17px] font-normal tracking-[0.06em] text-sayram leading-[1.55]">
                         一起去好多好玩的地方，<br>
                         明年，我们约定一起去赛里木湖领结婚证。
                     </h2>
 
-                    <div class="stagger-line d-3 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.88] font-light tracking-wide">
+                    <div class="stagger-line d-3 space-y-2 text-[12.5px] text-slate-200/95 leading-[1.82] font-light tracking-wide">
                         <p>
                             在那些打到深夜的电话里，我们一起规划了好多好多好玩的地方。我不想只陪你走过北京的四季，我还要带你去看旷野的风、看山海的辽阔。
                         </p>
@@ -553,16 +588,16 @@
                             <span>我们的浪漫规划清单（轻触点亮心愿）</span>
                             <span id="plan-progress">已点亮 3/3</span>
                         </div>
-                        <button data-plan="1" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[12px] text-[#e0f2fe] active:scale-[0.99] transition-all">
-                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <button data-plan="1" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[11.8px] text-[#e0f2fe] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
                             <span>1. 走遍我们深夜电话里聊过的好玩地方</span>
                         </button>
-                        <button data-plan="2" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[12px] text-[#e0f2fe] active:scale-[0.99] transition-all">
-                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <button data-plan="2" class="plan-item w-full p-2 rounded-xl bg-[#38bdf8]/15 border border-[#38bdf8]/35 flex items-center gap-2.5 text-left text-[11.8px] text-[#e0f2fe] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#38bdf8] text-[#060913] flex items-center justify-center text-[10px] font-bold shrink-0">✓</span>
                             <span>2. 明年一起奔赴新疆赛里木湖看雪山蓝湖与火焰山</span>
                         </button>
-                        <button data-plan="3" class="plan-item w-full p-2 rounded-xl bg-gradient-to-r from-[#38bdf8]/25 to-[#f3d5a5]/20 border border-[#f3d5a5]/45 flex items-center gap-2.5 text-left text-[12px] text-[#fff9f0] active:scale-[0.99] transition-all">
-                            <span class="w-4 h-4 rounded-full bg-[#f3d5a5] text-[#060913] flex items-center justify-center text-[10px] font-bold">♡</span>
+                        <button data-plan="3" class="plan-item w-full p-2 rounded-xl bg-gradient-to-r from-[#38bdf8]/25 to-[#f3d5a5]/20 border border-[#f3d5a5]/45 flex items-center gap-2.5 text-left text-[11.8px] text-[#fff9f0] active:scale-[0.99] transition-all">
+                            <span class="w-4 h-4 rounded-full bg-[#f3d5a5] text-[#060913] flex items-center justify-center text-[10px] font-bold shrink-0">♡</span>
                             <span>3. 在赛里木湖见证下，领属于我们的结婚证</span>
                         </button>
                     </div>
@@ -573,18 +608,18 @@
                  CHAPTER 7: 终章 · 玲玲，和你在一起真的很幸福
             ========================================================== -->
             <section class="story-section" data-chapter="6" data-title="07 / 07 · 和你在一起很幸福">
-                <div class="letter-card rounded-3xl p-4.5 sm:p-5 space-y-3.5">
-                    <div class="stagger-line d-1 flex items-center justify-between text-[11px] text-[#f3d5a5]/80 tracking-[0.14em]">
+                <div class="letter-card rounded-3xl space-y-3">
+                    <div class="stagger-line d-1 flex items-center justify-between gap-2 text-[11px] text-[#f3d5a5]/80 tracking-[0.12em]">
                         <span>终章 · 写给我的准新娘</span>
-                        <span>TRUE HAPPINESS</span>
+                        <span class="shrink-0">TRUE HAPPINESS</span>
                     </div>
 
-                    <h2 class="stagger-line d-2 text-[18px] font-normal tracking-[0.08em] text-champagne leading-[1.58]">
+                    <h2 class="stagger-line d-2 text-[17.5px] font-normal tracking-[0.06em] text-champagne leading-[1.55]">
                         玲玲，谢谢你来到我身边，<br>
                         和你在一起，真的很幸福。
                     </h2>
 
-                    <div class="stagger-line d-3 space-y-2.5 text-[13px] text-slate-200/95 leading-[1.94] font-light tracking-wide">
+                    <div class="stagger-line d-3 space-y-2.5 text-[12.8px] text-slate-200/95 leading-[1.88] font-light tracking-wide">
                         <p>
                             以前我总觉得幸福是很遥远的事，直到在 10月30日 11:42 遇见你，直到和你吃烤鱼、吃烤肉，打每一通到深夜的电话，在 11月9日 凌晨3:02 我们在一起拉，规划每一个有你的明天，我才无比笃定——<span class="underline-warm font-normal">和你在一起，真的很幸福。</span>
                         </p>
@@ -608,7 +643,7 @@
         </main>
 
         <!-- 6. BOTTOM UPWARD SWIPE HINT (Auto-hidden on Chapter 7) -->
-        <div id="bottom-swipe-hint" class="absolute bottom-[calc(env(safe-area-inset-bottom,8px)+8px)] left-0 right-0 z-20 flex flex-col items-center gap-0.5 pointer-events-none opacity-0 transition-opacity duration-500">
+        <div id="bottom-swipe-hint" class="absolute bottom-[calc(env(safe-area-inset-bottom,6px)+6px)] left-0 right-0 z-20 flex flex-col items-center gap-0.5 pointer-events-none opacity-0 transition-opacity duration-500">
             <span class="text-[10px] text-[#f3d5a5]/60 tracking-[0.22em] font-light">向上轻滑 · 继续阅读</span>
             <svg class="w-3.5 h-3.5 text-[#f3d5a5]/60 swipe-hint" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
@@ -621,11 +656,11 @@
                 <div class="w-10 h-1 rounded-full bg-white/20 mx-auto"></div>
 
                 <div class="flex items-center justify-between">
-                    <span class="text-xs tracking-[0.18em] text-[#f3d5a5]">写给玲玲的悄悄话 · 赛里木湖之约</span>
+                    <span class="text-xs tracking-[0.16em] text-[#f3d5a5]">写给玲玲的悄悄话 · 赛里木湖之约</span>
                     <span class="text-xs text-[#38bdf8]">96鼠 × 98虎</span>
                 </div>
 
-                <p class="text-[13.5px] text-slate-100 leading-[2.05] font-light tracking-wider">
+                <p class="text-[13.5px] text-slate-100 leading-[2.0] font-light tracking-wider">
                     “玲玲，如果看到这里眼睛红了，就抱抱一帆吧。<br>
                     不管多晚，你的小王永远在线，随时准备哄我的小姑娘。”
                 </p>
@@ -652,10 +687,10 @@
                 </div>
 
                 <div class="pt-1 flex gap-3">
-                    <button id="btn-more-lanterns" class="flex-1 py-3 rounded-full bg-[#38bdf8]/15 border border-[#38bdf8]/35 text-[#bae6fd] text-xs tracking-[0.16em] active:scale-95 transition-transform">
+                    <button id="btn-more-lanterns" class="flex-1 py-3 rounded-full bg-[#38bdf8]/15 border border-[#38bdf8]/35 text-[#bae6fd] text-xs tracking-[0.14em] active:scale-95 transition-transform">
                         再放漫天星火 ✨
                     </button>
-                    <button id="btn-close-sheet" class="flex-1 py-3 rounded-full bg-gradient-to-r from-[#f3d5a5] to-[#ff9e6d] text-[#060913] text-xs tracking-[0.16em] font-medium active:scale-95 transition-transform">
+                    <button id="btn-close-sheet" class="flex-1 py-3 rounded-full bg-gradient-to-r from-[#f3d5a5] to-[#ff9e6d] text-[#060913] text-xs tracking-[0.14em] font-medium active:scale-95 transition-transform">
                         好，我也抱抱你~
                     </button>
                 </div>
@@ -704,7 +739,7 @@
         updateClocks();
 
         /**************************************************************
-         * 2. SUBTLE MOBILE TOAST (No alert() or confirm() ever used)
+         * 2. SUBTLE MOBILE TOAST (Centered & Never Cut Off)
          **************************************************************/
         function showMobileToast(text) {
             const box = document.getElementById('toast-box');
@@ -893,9 +928,7 @@
             for (let i = 0; i < COUNT; i++) {
                 const t = i / COUNT;
 
-                // -----------------------------------------------------
-                // CHAPTER 1 (2026.10.30 11:42 相亲初识): Astral Clock at 11:42 + Converging Streams
-                // -----------------------------------------------------
+                // CHAPTER 1 (2026.10.30 11:42 相亲初识)
                 let x0, y0, z0, c0;
                 if (i < COUNT * 0.46) {
                     const a = t * Math.PI * 26;
@@ -905,7 +938,6 @@
                     z0 = (Math.random() - 0.5) * 1.2;
                     c0 = colGold.clone().lerp(colRose, Math.random() * 0.45);
                 } else if (i < COUNT * 0.62) {
-                    // Hands locked at 11:42
                     const isHour = (i % 2 === 0);
                     const rad = isHour ? (98.5 * Math.PI / 180) : (216 * Math.PI / 180);
                     const len = Math.random() * (isHour ? 4.0 : 6.2);
@@ -924,12 +956,9 @@
                 targetPositions[0].push(x0, y0, z0);
                 targetColors[0].push(c0.r, c0.g, c0.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 2 (孤独的北漂，因你有了生活的意义): Lonely City Pillars -> Warm Glowing Hearth
-                // -----------------------------------------------------
+                // CHAPTER 2 (孤独的北漂，因你有了生活的意义)
                 let x1, y1, z1, c1;
                 if (i < COUNT * 0.55) {
-                    // Warm Golden Hearth / Home Light at Top-Center
                     const u = Math.random() * Math.PI * 2;
                     const v = Math.acos(2 * Math.random() - 1);
                     const r = Math.pow(Math.random(), 0.55) * 5.2;
@@ -938,7 +967,6 @@
                     z1 = r * Math.cos(v);
                     c1 = colGold.clone().lerp(colEmber, Math.random() * 0.6);
                 } else {
-                    // Beijing City Skyline & Subway Streams Rising into Warmth
                     const colIdx = i % 9;
                     x1 = (colIdx - 4) * 2.1 + (Math.random() - 0.5) * 0.9;
                     y1 = -11 + Math.random() * 14.5;
@@ -949,12 +977,9 @@
                 targetPositions[1].push(x1, y1, z1);
                 targetColors[1].push(c1.r, c1.g, c1.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 3 (烤鱼与烤肉 · 96腊月鼠 × 98九月虎): Binary Stars & Rising Charcoal Embers
-                // -----------------------------------------------------
+                // CHAPTER 3 (烤鱼与烤肉 · 96腊月鼠 × 98九月虎)
                 let x2, y2, z2, c2;
                 if (i < COUNT * 0.36) {
-                    // 96年腊月鼠 (Rose Quartz Star)
                     const u = Math.random() * Math.PI * 2;
                     const v = Math.acos(2 * Math.random() - 1);
                     const r = Math.pow(Math.random(), 0.5) * 3.3;
@@ -963,7 +988,6 @@
                     z2 = r * Math.cos(v);
                     c2 = colRose.clone().lerp(colWhite, 0.35);
                 } else if (i < COUNT * 0.72) {
-                    // 98年九月虎 (Warm Guardian Ember Star)
                     const u = Math.random() * Math.PI * 2;
                     const v = Math.acos(2 * Math.random() - 1);
                     const r = Math.pow(Math.random(), 0.5) * 3.7;
@@ -972,7 +996,6 @@
                     z2 = r * Math.cos(v);
                     c2 = colEmber.clone().lerp(colGold, 0.5);
                 } else {
-                    // Rising Charcoal Sparks & Steam
                     x2 = (Math.random() - 0.5) * 15;
                     y2 = -12 + Math.random() * 22;
                     z2 = (Math.random() - 0.5) * 8;
@@ -981,9 +1004,7 @@
                 targetPositions[2].push(x2, y2, z2);
                 targetColors[2].push(c2.r, c2.g, c2.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 4 (每晚打到深夜的电话): Acoustic Soundwave Ribbons Connecting Two Nodes
-                // -----------------------------------------------------
+                // CHAPTER 4 (每晚打到深夜的电话)
                 let x3, y3, z3, c3;
                 const span = (t - 0.5) * 18;
                 const band = i % 3;
@@ -995,9 +1016,7 @@
                 targetPositions[3].push(x3, y3, z3);
                 targetColors[3].push(c3.r, c3.g, c3.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 5 (2026.11.09 凌晨03:02 · 心疼你的懂事): Protective Wings Sheltering Rose Star
-                // -----------------------------------------------------
+                // CHAPTER 5 (2026.11.09 凌晨03:02 · 心疼你的懂事)
                 let x4, y4, z4, c4;
                 if (i < COUNT * 0.34) {
                     const u = Math.random() * Math.PI * 2;
@@ -1018,12 +1037,9 @@
                 targetPositions[4].push(x4, y4, z4);
                 targetColors[4].push(c4.r, c4.g, c4.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 6 (明年一起去赛里木湖领结婚证): Sapphire Lake Waves + Snow Mountains + Two Interlocking Rings
-                // -----------------------------------------------------
+                // CHAPTER 6 (明年一起去赛里木湖领结婚证)
                 let x5, y5, z5, c5;
                 if (i < COUNT * 0.48) {
-                    // Sapphire Blue Waves of Sayram Lake (赛里木湖湛蓝湖面)
                     const gx = (Math.random() - 0.5) * 20;
                     const gz = (Math.random() - 0.5) * 12;
                     x5 = gx;
@@ -1031,7 +1047,6 @@
                     z5 = gz;
                     c5 = colSayram.clone().lerp(colSayramDeep, Math.random() * 0.6);
                 } else if (i < COUNT * 0.72) {
-                    // Distant Snow-capped Mountains (远方雪山)
                     const mx = (Math.random() - 0.5) * 20;
                     const peak1 = Math.max(0, 4.8 - Math.abs(mx + 4.5) * 0.95);
                     const peak2 = Math.max(0, 5.5 - Math.abs(mx - 3.8) * 0.9);
@@ -1041,7 +1056,6 @@
                     z5 = -5.5 + (Math.random() - 0.5) * 1.5;
                     c5 = colWhite.clone().lerp(colSayram, 0.28);
                 } else {
-                    // Two Glowing Interlocking Wedding Rings Floating Above the Lake (双生婚戒)
                     const isRingA = (i % 2 === 0);
                     const ang = Math.random() * Math.PI * 2;
                     const rRing = 2.7 + (Math.random() - 0.5) * 0.35;
@@ -1060,9 +1074,7 @@
                 targetPositions[5].push(x5, y5, z5);
                 targetColors[5].push(c5.r, c5.g, c5.b);
 
-                // -----------------------------------------------------
-                // CHAPTER 7 (终章 · 和你在一起真的很幸福): 3D Stardust Heart + Sapphire & Golden Lanterns
-                // -----------------------------------------------------
+                // CHAPTER 7 (终章 · 和你在一起真的很幸福)
                 let x6, y6, z6, c6;
                 if (i < COUNT * 0.72) {
                     const phi = Math.random() * Math.PI * 2;
@@ -1075,7 +1087,6 @@
                     z6 = hz * sc;
                     c6 = colRose.clone().lerp(colGold, Math.random() * 0.6);
                 } else {
-                    // Rising Golden & Sapphire Wish Lanterns around the Heart
                     const ang = t * Math.PI * 28;
                     const rad = 7.6 + (Math.random() - 0.5) * 1.5;
                     x6 = Math.cos(ang) * rad;
@@ -1248,7 +1259,6 @@
                 const pArr = posAttr.array;
                 const cArr = colAttr.array;
 
-                // Heartbeat pulse scale for Chapter 7
                 const heartPulse = (currentChapter === 6) ? (1 + Math.sin(elapsed * 3.2) * 0.035) : 1;
 
                 for (let i = 0; i < COUNT; i++) {
@@ -1256,13 +1266,10 @@
                     let driftY = Math.sin(elapsed * 1.3 + i * 0.05) * 0.022;
 
                     if (currentChapter === 2 && i >= COUNT * 0.72) {
-                        // Rising charcoal embers on Chapter 3
                         driftY = 0.035;
                     } else if (currentChapter === 3) {
-                        // Acoustic voice wave ripple on Chapter 4
                         driftY = Math.sin(elapsed * 2.8 + i * 0.09) * 0.06;
                     } else if (currentChapter === 5 && i < COUNT * 0.48) {
-                        // Gently shimmering Sayram Lake waves on Chapter 6
                         driftY = Math.sin(elapsed * 2.0 + pArr[idx] * 0.6) * 0.035;
                     }
 
@@ -1291,7 +1298,6 @@
                 bgStars.rotation.y = elapsed * 0.012;
             }
 
-            // Update Rising Sky Lantern Bursts
             for (let i = lanternBursts.length - 1; i >= 0; i--) {
                 const b = lanternBursts[i];
                 b.age++;
@@ -1366,7 +1372,6 @@
                             }
                         }
 
-                        // Hide upward swipe hint on Chapter 7
                         if (ch === 6) {
                             swipeHint.classList.add('opacity-0');
                         } else {
@@ -1391,7 +1396,6 @@
             const btnWarmBeijing = document.getElementById('btn-warm-beijing');
             const warmBeijingLabel = document.getElementById('warm-beijing-label');
             btnWarmBeijing.addEventListener('click', () => {
-                // Turn all Chapter 2 particles into warm champagne gold & rose
                 const colGold = new THREE.Color('#f3d5a5');
                 const colEmber = new THREE.Color('#ff9e6d');
                 for (let i = 0; i < COUNT; i++) {
@@ -1412,16 +1416,16 @@
             const memoryBox = document.getElementById('dinner-memory-box');
 
             tabFish.addEventListener('click', () => {
-                tabFish.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all';
-                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
+                tabFish.className = 'py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-normal bg-[#f3d5a5]/20 text-[#f3d5a5] border border-[#f3d5a5]/35 transition-all';
+                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
                 memoryBox.innerHTML = '第一次见面，我们去吃了热气腾腾的<span class="underline-warm">烤鱼</span>。隔着烤鱼盘咕嘟咕嘟升起的雾气，看着对面的你温柔地笑，我心里突然冒出一个强烈的念头——往后的每一顿饭，我都不想再一个人吃了。';
                 releaseSkyLanterns(-2.5, 2.5, 65, false);
                 soundBox.playChime([349.23, 440.00, 523.25]);
             });
 
             tabBbq.addEventListener('click', () => {
-                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-normal bg-[#ff9e6d]/25 text-[#f3d5a5] border border-[#ff9e6d]/40 transition-all';
-                tabFish.className = 'py-1.5 px-2 rounded-xl text-[12px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
+                tabBbq.className = 'py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-normal bg-[#ff9e6d]/25 text-[#f3d5a5] border border-[#ff9e6d]/40 transition-all';
+                tabFish.className = 'py-1.5 px-2 rounded-xl text-[11.5px] tracking-wider font-light text-slate-400 border border-transparent transition-all';
                 memoryBox.innerHTML = '第二次见面，我们去吃了<span class="underline-warm">烤肉</span>。在滋滋作响的烤肉香气里，我们自然地聊着笑着，没有半点生疏。也是在那晚温暖的烟火气里，我笃定了想要一辈子护着你的心。';
                 releaseSkyLanterns(2.5, 2.5, 65, false);
                 soundBox.playChime([392.00, 493.88, 587.33]);
@@ -1469,7 +1473,7 @@
                 });
             });
 
-            // 8. Chapter 7 Finale Button:「 玲玲，明年赛里木湖见 ♡ 」
+            // 8. Chapter 7 Finale Button:「 玲玲，相约赛里木湖 ♡ 」
             const backdrop = document.getElementById('whisper-backdrop');
             const sheet = document.getElementById('whisper-sheet');
             const btnSayramFinale = document.getElementById('btn-sayram-finale');
